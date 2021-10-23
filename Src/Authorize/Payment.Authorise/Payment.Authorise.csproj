@@ -4,6 +4,7 @@
         <TargetFramework>net5.0</TargetFramework>
         <UserSecretsId>dotnet-AuthorizeService-50CCEA5C-99F2-404A-92EE-233A3D1ED571</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <RootNamespace>AuthorizeService</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
