@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672:5672"
+
+  payment-authorise:
+    image: ${DOCKER_REGISTRY-}payment-authorise
+    build:
+      context: .
+      dockerfile: Payment.Authorise/Dockerfile
+    depends_on:
+      - rabbitmq
+
+  payment-capture:
+    image: ${DOCKER_REGISTRY-}payment-capture
+    build:
+      context: .
+      dockerfile: Payment.Capture/Dockerfile
+    depends_on:
+      - rabbitmq
+
+  payment-gateway:
+    image: ${DOCKER_REGISTRY-}payment-gateway
+    build:
+      context: .
+      dockerfile: Payment.Gateway/Dockerfile
+    depends_on:
+      - rabbitmq
+
+  payment-refund:
+    image: ${DOCKER_REGISTRY-}payment-refund
+    build:
+      context: .
+      dockerfile: Payment.Refund/Dockerfile
+    depends_on:
+      - rabbitmq
+
+  payment-void:
+    image: ${DOCKER_REGISTRY-}payment-void
+    build:
+      context: .
+      dockerfile: Payment.Void/Dockerfile
+    depends_on:
+      - rabbitmq
