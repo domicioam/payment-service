@@ -17,7 +17,7 @@ namespace Payment.Communication.RabbitMq
 
         public event DoWork MessageReceived;
 
-        public Task StartListeningForPaymentRequestsAsync(string queueName)
+        public Task StartListeningForRequestsAsync(string queueName)
         {
             return Task.Run(() =>
             {
