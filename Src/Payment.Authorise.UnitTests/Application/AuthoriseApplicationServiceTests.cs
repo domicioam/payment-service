@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using AuthorizeService;
 using AuthorizeService.Application;
+using AuthorizeService.Factories;
 using AuthorizeService.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace AuthoriseService.UnitTests.Application
         {
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
-            var authorisationService = new Mock<AuthorisationService>();
+            var authorisationService = new Mock<AuthorisationFactory>();
             var cardService = new Mock<CreditCardService>();
             var merchantService = new Mock<MerchantService>();
             
@@ -46,7 +47,7 @@ namespace AuthoriseService.UnitTests.Application
         {
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
-            var authorisationService = new Mock<AuthorisationService>();
+            var authorisationService = new Mock<AuthorisationFactory>();
             var cardService = new Mock<CreditCardService>();
             var merchantService = new Mock<MerchantService>();
             
@@ -65,7 +66,7 @@ namespace AuthoriseService.UnitTests.Application
         {
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
-            var authorisationService = new Mock<AuthorisationService>();
+            var authorisationService = new Mock<AuthorisationFactory>();
             var cardService = new Mock<CreditCardService>();
             var merchantService = new Mock<MerchantService>();
             
@@ -84,7 +85,7 @@ namespace AuthoriseService.UnitTests.Application
         {
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
-            var authorisationService = new Mock<AuthorisationService>();
+            var authorisationService = new Mock<AuthorisationFactory>();
             var cardService = new Mock<CreditCardService>();
             var merchantService = new Mock<MerchantService>();
             
@@ -103,7 +104,7 @@ namespace AuthoriseService.UnitTests.Application
         {
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
-            var authorisationService = new Mock<AuthorisationService>();
+            var authorisationService = new Mock<AuthorisationFactory>();
             var cardService = new Mock<CreditCardService>();
             var merchantService = new Mock<MerchantService>();
             

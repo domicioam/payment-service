@@ -1,4 +1,5 @@
 using System;
+using AuthorizeService.Factories;
 using AuthorizeService.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,16 +10,16 @@ namespace AuthorizeService.Application
     {
         private readonly ILogger<AuthoriseApplicationService> _logger;
         private readonly IMediator _mediator;
-        private readonly AuthorisationService _authorisationService;
+        private readonly AuthorisationFactory _authorisationFactory;
         private readonly CreditCardService _cardService;
         private readonly MerchantService _merchantService;
 
         public AuthoriseApplicationService(ILogger<AuthoriseApplicationService> logger, IMediator mediator, 
-            AuthorisationService authorisationService, CreditCardService cardService, MerchantService merchantService)
+            AuthorisationFactory authorisationFactory, CreditCardService cardService, MerchantService merchantService)
         {
             _logger = logger;
             _mediator = mediator;
-            _authorisationService = authorisationService;
+            _authorisationFactory = authorisationFactory;
             _cardService = cardService;
             _merchantService = merchantService;
         }
@@ -30,7 +31,7 @@ namespace AuthorizeService.Application
                 if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard) &&
                     _merchantService.IsMerchantValid(authoriseCommand.MerchantId))
                 {
-                    var authorisation = _authorisationService.CreateAuthorisation(authoriseCommand.MerchantId,
+                    var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
                         authoriseCommand.CreditCard,
                         authoriseCommand.Currency, authoriseCommand.Amount);
                     _mediator.Send(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
