@@ -25,17 +25,26 @@ namespace AuthorizeService.Application
         
         public void Authorise(AuthorisationCommand authoriseCommand)
         {
-            if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard) && _merchantService.IsMerchantValid(authoriseCommand.MerchantId))
+            try
             {
-                var authorisation = _authorisationService.CreateAuthorisation(authoriseCommand.MerchantId, authoriseCommand.CreditCard,
-                    authoriseCommand.Currency, authoriseCommand.Amount);
-                _mediator.Send(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
-                _logger.LogInformation($"[Authorise] Authorisation created with id: {authorisation.Id}");
-                return;
+                if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard) &&
+                    _merchantService.IsMerchantValid(authoriseCommand.MerchantId))
+                {
+                    var authorisation = _authorisationService.CreateAuthorisation(authoriseCommand.MerchantId,
+                        authoriseCommand.CreditCard,
+                        authoriseCommand.Currency, authoriseCommand.Amount);
+                    _mediator.Send(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
+                    _logger.LogInformation($"[Authorise] Authorisation created with id: {authorisation.Id}");
+                    return;
+                }
+
+                _logger.LogWarning($"[Authorise] Authorisation rejected for merchant with id: {authoriseCommand.MerchantId}");
+                _mediator.Send(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
             }
-            
-            _logger.LogWarning($"[Authorise] Authorisation rejected for merchant with id: {authoriseCommand.MerchantId}");
-            _mediator.Send(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"[Authorise] Error when trying to authorise command for merchant with id: {authoriseCommand.MerchantId}");
+            }
         }
     }
 }

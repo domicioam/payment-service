@@ -97,5 +97,26 @@ namespace AuthoriseService.UnitTests.Application
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
         }
+        
+        [Fact]
+        public void Should_log_error_when_exception_thrown_while_trying_to_create_authorisation()
+        {
+            var logger = new Mock<ILogger<AuthoriseApplicationService>>();
+            var mediator = new Mock<IMediator>();
+            var authorisationService = new Mock<AuthorisationService>();
+            var cardService = new Mock<CreditCardService>();
+            var merchantService = new Mock<MerchantService>();
+            
+            cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
+            merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);
+            authorisationService.Setup(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(),
+                It.IsAny<Currency>(), It.IsAny<decimal>())).Throws(new Exception());
+            
+            var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
+            authoriseAppService.Authorise(_fixture.Command);
+            
+            mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Never);
+            mediator.Verify(m => m.Send(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
     }
 }
