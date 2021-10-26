@@ -2,7 +2,7 @@ using System;
 
 namespace AuthorizeService.Services
 {
-    public interface MerchantService
+    public interface CanValidateMerchant
     {
         bool IsMerchantValid(Guid merchant);
     }

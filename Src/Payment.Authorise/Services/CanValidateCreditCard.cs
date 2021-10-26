@@ -1,6 +1,6 @@
 namespace AuthorizeService.Services
 {
-    public interface CreditCardService
+    public interface CanValidateCreditCard
     {
         bool IsCreditCardValid(CreditCard creditCard);
     }

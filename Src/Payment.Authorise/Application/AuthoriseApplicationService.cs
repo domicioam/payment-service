@@ -11,17 +11,17 @@ namespace AuthorizeService.Application
         private readonly ILogger<AuthoriseApplicationService> _logger;
         private readonly IMediator _mediator;
         private readonly AuthorisationFactory _authorisationFactory;
-        private readonly CreditCardService _cardService;
-        private readonly MerchantService _merchantService;
+        private readonly CanValidateCreditCard _cardService;
+        private readonly CanValidateMerchant _canValidateMerchant;
 
         public AuthoriseApplicationService(ILogger<AuthoriseApplicationService> logger, IMediator mediator, 
-            AuthorisationFactory authorisationFactory, CreditCardService cardService, MerchantService merchantService)
+            AuthorisationFactory authorisationFactory, CanValidateCreditCard cardService, CanValidateMerchant canValidateMerchant)
         {
             _logger = logger;
             _mediator = mediator;
             _authorisationFactory = authorisationFactory;
             _cardService = cardService;
-            _merchantService = merchantService;
+            _canValidateMerchant = canValidateMerchant;
         }
         
         public void Authorise(AuthorisationCommand authoriseCommand)
@@ -29,7 +29,7 @@ namespace AuthorizeService.Application
             try
             {
                 if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard) &&
-                    _merchantService.IsMerchantValid(authoriseCommand.MerchantId))
+                    _canValidateMerchant.IsMerchantValid(authoriseCommand.MerchantId))
                 {
                     var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
                         authoriseCommand.CreditCard,

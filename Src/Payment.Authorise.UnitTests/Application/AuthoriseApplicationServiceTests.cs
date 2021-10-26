@@ -26,8 +26,8 @@ namespace AuthoriseService.UnitTests.Application
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
             var authorisationService = new Mock<AuthorisationFactory>();
-            var cardService = new Mock<CreditCardService>();
-            var merchantService = new Mock<MerchantService>();
+            var cardService = new Mock<CanValidateCreditCard>();
+            var merchantService = new Mock<CanValidateMerchant>();
             
             Guid transactionId = Guid.NewGuid();
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
@@ -48,8 +48,8 @@ namespace AuthoriseService.UnitTests.Application
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
             var authorisationService = new Mock<AuthorisationFactory>();
-            var cardService = new Mock<CreditCardService>();
-            var merchantService = new Mock<MerchantService>();
+            var cardService = new Mock<CanValidateCreditCard>();
+            var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
             merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(false);
@@ -67,8 +67,8 @@ namespace AuthoriseService.UnitTests.Application
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
             var authorisationService = new Mock<AuthorisationFactory>();
-            var cardService = new Mock<CreditCardService>();
-            var merchantService = new Mock<MerchantService>();
+            var cardService = new Mock<CanValidateCreditCard>();
+            var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(false);
             merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);
@@ -86,8 +86,8 @@ namespace AuthoriseService.UnitTests.Application
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
             var authorisationService = new Mock<AuthorisationFactory>();
-            var cardService = new Mock<CreditCardService>();
-            var merchantService = new Mock<MerchantService>();
+            var cardService = new Mock<CanValidateCreditCard>();
+            var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(false);
             merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(false);
@@ -105,8 +105,8 @@ namespace AuthoriseService.UnitTests.Application
             var logger = new Mock<ILogger<AuthoriseApplicationService>>();
             var mediator = new Mock<IMediator>();
             var authorisationService = new Mock<AuthorisationFactory>();
-            var cardService = new Mock<CreditCardService>();
-            var merchantService = new Mock<MerchantService>();
+            var cardService = new Mock<CanValidateCreditCard>();
+            var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
             merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);

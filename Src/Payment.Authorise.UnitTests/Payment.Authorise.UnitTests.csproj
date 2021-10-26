@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <Compile Remove="UnitTest1.cs" />
+      <Compile Remove="Services\MerchantServiceTests.cs" />
     </ItemGroup>
 
     <ItemGroup>
