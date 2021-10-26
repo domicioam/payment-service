@@ -45,7 +45,7 @@ namespace AuthorizeService
             {
                 try
                 {
-                    var authoriseDto = JsonSerializer.Deserialize<AuthorisationDto>(message);
+                    var authoriseDto = JsonSerializer.Deserialize<AuthorisationCommand>(message);
                     _authoriseApplicationService.Authorise(authoriseDto);
                 }
                 catch (Exception e)
