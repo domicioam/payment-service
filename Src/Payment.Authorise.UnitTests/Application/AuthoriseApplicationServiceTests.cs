@@ -28,13 +28,16 @@ namespace AuthoriseService.UnitTests.Application
             var cardService = new Mock<CreditCardService>();
             var merchantService = new Mock<MerchantService>();
             
+            Guid transactionId = Guid.NewGuid();
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
             merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);
+            authorisationService.Setup(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(),
+                It.IsAny<Currency>(), It.IsAny<decimal>())).Returns(new Authorisation(transactionId));
             
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
             authoriseAppService.Authorise(_fixture.Command);
             
-            authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Once);
+            authorisationService.Verify(a => a.CreateAuthorisation(_fixture.Command.MerchantId, _fixture.CreditCard, _fixture.Command.Currency, _fixture.Command.Amount), Times.Once);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Once);
         }
         
