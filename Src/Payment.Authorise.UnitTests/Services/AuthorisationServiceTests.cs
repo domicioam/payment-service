@@ -1,4 +1,6 @@
+using AuthorizeService.Repository;
 using AuthorizeService.Services;
+using Moq;
 using Xunit;
 
 namespace AuthoriseService.UnitTests.Services
@@ -8,7 +10,8 @@ namespace AuthoriseService.UnitTests.Services
         [Fact]
         public void test()
         {
-            var authorisationService = new AuthorisationService();
+            var merchantRepository = new Mock<MerchantRepository>();
+            var authorisationService = new AuthorisationService(merchantRepository.Object);
         }
     }
 }

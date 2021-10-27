@@ -39,20 +39,17 @@ namespace AuthorizeService
             await _rabbitMqConsumer.StartListeningForRequestsAsync("authorise");
         }
 
-        private void ProcessAuthoriseRequest(string message)
+        private async void ProcessAuthoriseRequest(string message)
         {
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    var authoriseDto = JsonSerializer.Deserialize<AuthorisationCommand>(message);
-                    _authoriseApplicationService.Authorise(authoriseDto);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error while processing message.", message);
-                }
-            });
+                var authoriseDto = JsonSerializer.Deserialize<AuthorisationCommand>(message);
+                await _authoriseApplicationService.AuthoriseAsync(authoriseDto);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error while processing message.", message);
+            }
         }
     }
 }

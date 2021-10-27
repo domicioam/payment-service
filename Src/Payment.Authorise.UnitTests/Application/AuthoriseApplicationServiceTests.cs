@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using AuthorizeService;
 using AuthorizeService.Application;
+using AuthorizeService.Entities;
 using AuthorizeService.Factories;
 using AuthorizeService.Services;
 using MediatR;
@@ -31,12 +32,12 @@ namespace AuthoriseService.UnitTests.Application
             
             Guid transactionId = Guid.NewGuid();
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
-            merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);
+            merchantService.Setup(m => m.IsMerchantValidAsync(It.IsAny<Guid>())).ReturnsAsync(true);
             authorisationService.Setup(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(),
                 It.IsAny<Currency>(), It.IsAny<decimal>())).Returns(new Authorisation(transactionId));
             
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
-            authoriseAppService.Authorise(_fixture.Command);
+            authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(_fixture.Command.MerchantId, _fixture.CreditCard, _fixture.Command.Currency, _fixture.Command.Amount), Times.Once);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -52,10 +53,10 @@ namespace AuthoriseService.UnitTests.Application
             var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
-            merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(false);
+            merchantService.Setup(m => m.IsMerchantValidAsync(It.IsAny<Guid>())).ReturnsAsync(false);
             
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
-            authoriseAppService.Authorise(_fixture.Command);
+            authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -71,10 +72,10 @@ namespace AuthoriseService.UnitTests.Application
             var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(false);
-            merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);
+            merchantService.Setup(m => m.IsMerchantValidAsync(It.IsAny<Guid>())).ReturnsAsync(true);
             
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
-            authoriseAppService.Authorise(_fixture.Command);
+            authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -90,10 +91,10 @@ namespace AuthoriseService.UnitTests.Application
             var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(false);
-            merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(false);
+            merchantService.Setup(m => m.IsMerchantValidAsync(It.IsAny<Guid>())).ReturnsAsync(false);
             
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
-            authoriseAppService.Authorise(_fixture.Command);
+            authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -109,12 +110,12 @@ namespace AuthoriseService.UnitTests.Application
             var merchantService = new Mock<CanValidateMerchant>();
             
             cardService.Setup(c => c.IsCreditCardValid(It.IsAny<CreditCard>())).Returns(true);
-            merchantService.Setup(m => m.IsMerchantValid(It.IsAny<Guid>())).Returns(true);
+            merchantService.Setup(m => m.IsMerchantValidAsync(It.IsAny<Guid>())).ReturnsAsync(true);
             authorisationService.Setup(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(),
                 It.IsAny<Currency>(), It.IsAny<decimal>())).Throws(new Exception());
             
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
-            authoriseAppService.Authorise(_fixture.Command);
+            authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Never);
             mediator.Verify(m => m.Send(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Never);

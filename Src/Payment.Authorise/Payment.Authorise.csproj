@@ -8,30 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.0.90" />
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
         <PackageReference Include="Moq" Version="4.16.1" />
+        <PackageReference Include="Npgsql" Version="6.0.0-rc.2" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Payment.Communication.RabbitMq\Payment.Communication.RabbitMq.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Services\CardValidator.cs" />
-      <Compile Remove="Services\MerchantValidator.cs" />
-      <Compile Remove="Entities\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="Entities\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Entities\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="Entities\**" />
     </ItemGroup>
 </Project>

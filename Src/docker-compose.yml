@@ -6,6 +6,16 @@ services:
     ports:
       - "5672:5672"
 
+  payment-authorise-sqldata:
+    image: "postgres"
+    ports: 
+      - "5432:5432"
+    env_file:
+      - Payment.Authorise/sqldata.env
+    # volumes:
+    #   - ./payment_authorize_schema.sql:/docker-entrypoint-inidb.d/payment_authorize_schema.sql
+
+
   payment-authorise:
     image: ${DOCKER_REGISTRY-}payment-authorise
     build:

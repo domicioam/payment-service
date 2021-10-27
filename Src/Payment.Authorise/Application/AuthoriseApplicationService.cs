@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using AuthorizeService.Factories;
 using AuthorizeService.Services;
 using MediatR;
@@ -24,23 +25,23 @@ namespace AuthorizeService.Application
             _canValidateMerchant = canValidateMerchant;
         }
         
-        public void Authorise(AuthorisationCommand authoriseCommand)
+        public async Task AuthoriseAsync(AuthorisationCommand authoriseCommand)
         {
             try
             {
                 if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard) &&
-                    _canValidateMerchant.IsMerchantValid(authoriseCommand.MerchantId))
+                    await _canValidateMerchant.IsMerchantValidAsync(authoriseCommand.MerchantId))
                 {
                     var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
                         authoriseCommand.CreditCard,
                         authoriseCommand.Currency, authoriseCommand.Amount);
-                    _mediator.Send(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
+                    await _mediator.Send(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
                     _logger.LogInformation($"[Authorise] Authorisation created with id: {authorisation.Id}");
                     return;
                 }
 
                 _logger.LogWarning($"[Authorise] Authorisation rejected for merchant with id: {authoriseCommand.MerchantId}");
-                _mediator.Send(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
+                await _mediator.Send(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
             }
             catch (Exception e)
             {

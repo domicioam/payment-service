@@ -1,7 +1,6 @@
+using System;
+
 namespace AuthorizeService.Entities
 {
-    public class Merchant
-    {
-        
-    }
+    public record Merchant(Guid Id, bool IsActive);
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace AuthorizeService
+namespace AuthorizeService.Entities
 {
     public record Authorisation(Guid Id);
 }

@@ -1,5 +1,6 @@
 using System;
 using AuthorizeService.Application;
+using AuthorizeService.Entities;
 
 namespace AuthorizeService.Factories
 {
