@@ -19,9 +19,10 @@ namespace AuthorizeService.Services
             return merchant.IsActive;
         }
 
-        public bool IsCreditCardValid(CreditCard creditCard)
+        public bool IsCreditCardValid(CreditCard creditCard, DateTime validUntil)
         {
-            throw new NotImplementedException();
+            //TODO: validation with card company
+            return creditCard.IsValid(validUntil);
         }
     }
 }

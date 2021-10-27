@@ -29,7 +29,7 @@ namespace AuthorizeService.Application
         {
             try
             {
-                if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard) &&
+                if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard, DateTime.Today) &&
                     await _canValidateMerchant.IsMerchantValidAsync(authoriseCommand.MerchantId))
                 {
                     var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
