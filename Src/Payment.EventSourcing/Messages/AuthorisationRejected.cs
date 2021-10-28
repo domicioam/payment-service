@@ -2,7 +2,7 @@ using System;
 using MediatR;
 using Payment.Foundation.EventSourcing;
 
-namespace AuthorizeService.Application
+namespace Payment.EventSourcing.Messages
 {
     public class AuthorisationRejected : Event, INotification
     {

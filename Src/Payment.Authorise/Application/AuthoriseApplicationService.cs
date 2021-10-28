@@ -4,6 +4,7 @@ using AuthorizeService.Factories;
 using AuthorizeService.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Payment.EventSourcing.Messages;
 
 namespace AuthorizeService.Application
 {

@@ -1,13 +1,17 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
+using Payment.EventSourcing.Messages;
 
 namespace Payment.Gateway.Controllers
 {
-    public class AuthoriseController : Controller
+    [Route("[controller]")]
+    [ApiController]
+    public class AuthoriseController : ControllerBase
     {
-        // GET
-        public IActionResult Index()
+        [HttpPost]
+        public IActionResult Post([FromBody] AuthorisationCommand authorisationCommand)
         {
-            return View();
+            throw new NotImplementedException();
         }
     }
 }

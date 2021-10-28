@@ -1,6 +1,7 @@
 using System;
 using AuthorizeService;
 using AuthorizeService.Application;
+using Payment.EventSourcing.Messages;
 
 namespace AuthoriseService.UnitTests
 {

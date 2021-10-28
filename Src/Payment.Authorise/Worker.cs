@@ -6,6 +6,7 @@ using AuthorizeService.Application;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Payment.Communication.RabbitMq;
+using Payment.EventSourcing.Messages;
 
 namespace AuthorizeService
 {

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AuthorizeService.Application;
 using PaymentGatewayWorker.EventSourcing;
 using MediatR;
+using Payment.EventSourcing.Messages;
 
 namespace AuthorizeService.EventSourcing
 {

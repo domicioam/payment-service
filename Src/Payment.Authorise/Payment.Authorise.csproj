@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Payment.Communication.RabbitMq\Payment.Communication.RabbitMq.csproj" />
+      <ProjectReference Include="..\Payment.EventSourcing\Payment.EventSourcing.csproj" />
       <ProjectReference Include="..\Payment.Foundation\Payment.Foundation.csproj" />
     </ItemGroup>
 </Project>
