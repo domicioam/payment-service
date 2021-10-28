@@ -1,10 +1,12 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:5.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Payment.Gateway/Payment.Gateway.csproj", "Payment.Gateway/"]
-RUN dotnet restore "Payment.Gateway/Payment.Gateway.csproj"
+COPY ["Services/Payment.Gateway/Payment.Gateway.csproj", "Payment.Gateway/"]
+RUN dotnet restore "Services/Payment.Gateway/Payment.Gateway.csproj"
 COPY . .
 WORKDIR "/src/Payment.Gateway"
 RUN dotnet build "Payment.Gateway.csproj" -c Release -o /app/build
