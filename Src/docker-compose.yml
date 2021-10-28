@@ -34,6 +34,9 @@ services:
 
   payment-gateway:
     image: ${DOCKER_REGISTRY-}payment-gateway
+    ports:
+      - "80:80"
+      - "443:443"
     build:
       context: .
       dockerfile: Payment.Gateway/Dockerfile

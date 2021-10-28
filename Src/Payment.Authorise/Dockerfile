@@ -5,6 +5,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Payment.Authorise/Payment.Authorise.csproj", "Payment.Authorise/"]
 COPY ["Payment.Communication.RabbitMq/Payment.Communication.RabbitMq.csproj", "Payment.Communication.RabbitMq/"]
+COPY ["Payment.EventSourcing/Payment.EventSourcing.csproj", "Payment.EventSourcing/"]
+COPY ["Payment.Foundation/Payment.Foundation.csproj", "Payment.Foundation/"]
 RUN dotnet restore "Payment.Authorise/Payment.Authorise.csproj"
 COPY . .
 WORKDIR "/src/Payment.Authorise"
