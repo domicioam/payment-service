@@ -25,11 +25,5 @@ namespace PaymentGatewayWorker.EventSourcing
             var events = await connection.QueryAsync<LoggedEvent>($"SELECT * FROM LoggedEvent WHERE ID = {aggregateId}");
             return events.ToList();
         }
-
-        // Necessary for mocking
-        protected EventRepository()
-        {
-
-        }
     }
 }
