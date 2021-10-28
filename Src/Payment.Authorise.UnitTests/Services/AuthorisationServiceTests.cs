@@ -36,7 +36,7 @@ namespace AuthoriseService.UnitTests.Services
         }
         
         [Fact]
-        public async Task Should_return_true_when_card_is_valid()
+        public void Should_return_true_when_card_is_valid()
         {
             var merchantRepository = new Mock<MerchantRepository>();
             var creditCard = new CreditCard("1234", new DateTime(2023, 10, 20), "123");
@@ -47,7 +47,7 @@ namespace AuthoriseService.UnitTests.Services
         }
         
         [Fact]
-        public async Task Should_return_false_when_card_is_invalid()
+        public void Should_return_false_when_card_is_invalid()
         {
             var merchantRepository = new Mock<MerchantRepository>();
             var creditCard = new CreditCard("1234", new DateTime(2025, 10, 20), "123");
