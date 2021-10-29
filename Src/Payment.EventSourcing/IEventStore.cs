@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Payment.Foundation.EventSourcing
+namespace Payment.EventSourcing
 {
     public interface IEventStore
     {

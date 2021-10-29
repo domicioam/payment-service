@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +21,8 @@ namespace Payment.Gateway.Controllers
         public async Task<IActionResult> Post([FromBody] AuthorisationCommand authorisationCommand)
         {
             string commandSerialized = JsonSerializer.Serialize(authorisationCommand);
-            await _rabbitMqPublisher.SendMessageAsync(commandSerialized, "authorise");
+            const string authoriseQueueName = "authorise";
+            await _rabbitMqPublisher.SendMessageAsync(commandSerialized, authoriseQueueName);
             return Ok();
         }
     }

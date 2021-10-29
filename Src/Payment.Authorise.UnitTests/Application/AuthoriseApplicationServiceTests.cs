@@ -8,6 +8,7 @@ using AuthorizeService.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Payment.EventSourcing;
 using Payment.EventSourcing.Messages;
 using Xunit;
 

@@ -5,6 +5,8 @@ using AuthorizeService.Entities;
 using AuthorizeService.Repository;
 using AuthorizeService.Services;
 using Moq;
+using Payment.EventSourcing;
+using Payment.EventSourcing.Messages;
 using Xunit;
 
 namespace AuthoriseService.UnitTests.Services

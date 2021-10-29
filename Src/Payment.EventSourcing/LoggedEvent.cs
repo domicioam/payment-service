@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Payment.Foundation.EventSourcing
+namespace Payment.EventSourcing
 {
     [Table("LoggedEvent")]
     public class LoggedEvent

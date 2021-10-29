@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PaymentGatewayWorker.EventSourcing;
 
-namespace Payment.Foundation.EventSourcing
+namespace Payment.EventSourcing
 {
     public interface IEventRepository
     {

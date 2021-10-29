@@ -1,4 +1,6 @@
 using System;
+using Payment.EventSourcing;
+using Payment.EventSourcing.Messages;
 
 namespace AuthorizeService.Services
 {

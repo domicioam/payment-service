@@ -1,4 +1,4 @@
-namespace AuthorizeService.Application
+namespace Payment.EventSourcing.Messages
 {
     public enum Currency
     {

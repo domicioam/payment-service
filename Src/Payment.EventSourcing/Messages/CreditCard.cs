@@ -1,6 +1,6 @@
 using System;
 
-namespace AuthorizeService
+namespace Payment.EventSourcing.Messages
 {
     public record CreditCard(string Number, DateTime ExpiryDate, string Cvv)
     {

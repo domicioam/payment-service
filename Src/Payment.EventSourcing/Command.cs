@@ -1,4 +1,4 @@
-﻿namespace Payment.Foundation.EventSourcing
+﻿namespace Payment.EventSourcing
 {
     public class Command : Message
     {

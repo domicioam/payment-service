@@ -1,5 +1,4 @@
 using AuthorizeService.Application;
-using AuthorizeService.EventSourcing;
 using AuthorizeService.Factories;
 using AuthorizeService.Repository;
 using AuthorizeService.Services;
@@ -7,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Payment.Communication.RabbitMq;
-using Payment.Foundation.EventSourcing;
+using Payment.EventSourcing;
 using PaymentGatewayWorker.EventSourcing;
 
 namespace AuthorizeService
@@ -29,7 +28,6 @@ namespace AuthorizeService
                     services.AddTransient<AuthorisationFactory>();
                     services.AddTransient<AuthoriseApplicationService>();
                     services.AddTransient<EventStore>();
-                    services.AddTransient<AuthoriseEventStore>();
                     services.AddHostedService<Worker>();
                     services.AddMediatR(typeof(Program));
                     services.AddTransient<CanValidateCreditCard, AuthorisationService>();

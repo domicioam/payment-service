@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Payment.Foundation.EventSourcing
+namespace Payment.EventSourcing
 {
     public class Event : Message
     {

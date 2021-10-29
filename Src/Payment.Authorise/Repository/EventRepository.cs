@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
 using Dapper.Contrib.Extensions;
-using Payment.Foundation.EventSourcing;
+using Payment.EventSourcing;
 
 namespace PaymentGatewayWorker.EventSourcing
 {

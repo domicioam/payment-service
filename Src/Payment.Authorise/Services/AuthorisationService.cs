@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using AuthorizeService.Repository;
+using Payment.EventSourcing;
+using Payment.EventSourcing.Messages;
 
 namespace AuthorizeService.Services
 {

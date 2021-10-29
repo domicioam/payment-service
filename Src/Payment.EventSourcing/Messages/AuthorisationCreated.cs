@@ -1,6 +1,5 @@
 using System;
 using MediatR;
-using Payment.Foundation.EventSourcing;
 
 namespace Payment.EventSourcing.Messages
 {
