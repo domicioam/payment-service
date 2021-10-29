@@ -15,6 +15,12 @@ services:
     # volumes:
     #   - ./payment_authorize_schema.sql:/docker-entrypoint-inidb.d/payment_authorize_schema.sql
 
+  event-store-sqldata:
+    image: "postgres"
+    ports:
+      - "5433:5433"
+    env_file:
+      - Payment.Authorise/sqldata.env
 
   payment-authorise:
     image: ${DOCKER_REGISTRY-}payment-authorise
@@ -35,7 +41,7 @@ services:
   payment-gateway:
     image: ${DOCKER_REGISTRY-}payment-gateway
     ports:
-      - "80:80"
+      - "8080:80"
       - "443:443"
     build:
       context: .

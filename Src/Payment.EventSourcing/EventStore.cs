@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Payment.Communication.RabbitMq;
 using Payment.EventSourcing.Messages;
+using Payment.EventSourcing.Repository;
 
 namespace Payment.EventSourcing
 {

@@ -36,13 +36,13 @@ namespace AuthorizeService.Application
                     var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
                         authoriseCommand.CreditCard,
                         authoriseCommand.Currency, authoriseCommand.Amount);
-                    await _mediator.Send(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
+                    await _mediator.Publish(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
                     _logger.LogInformation($"[Authorise] Authorisation created with id: {authorisation.Id}");
                     return;
                 }
 
                 _logger.LogWarning($"[Authorise] Authorisation rejected for merchant with id: {authoriseCommand.MerchantId}");
-                await _mediator.Send(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
+                await _mediator.Publish(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
             }
             catch (Exception e)
             {

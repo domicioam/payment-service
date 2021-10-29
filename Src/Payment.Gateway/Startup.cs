@@ -27,7 +27,11 @@ namespace Payment.Gateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var rabbitMqConfig = Configuration.GetSection("rabbitMq");
+            services.Configure<RabbitMqConfig>(rabbitMqConfig);
+            
             services.AddControllers();
+            services.AddLogging();
             services.AddTransient<RabbitMqPublisher>();
             services.AddSwaggerGen(c =>
             {

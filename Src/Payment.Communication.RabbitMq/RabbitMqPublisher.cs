@@ -12,7 +12,7 @@ namespace Payment.Communication.RabbitMq
 {
     public class RabbitMqPublisher
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<RabbitMqPublisher> _logger;
         private readonly ConcurrentDictionary<ulong, string> _outstandingConfirms;
         private readonly RabbitMqConfig _rabbitMqConfig;
         private IConnection _connection;
@@ -20,6 +20,8 @@ namespace Payment.Communication.RabbitMq
 
         public virtual Task SendMessageAsync(string message, string queueName)
         {
+            _logger.LogInformation($"Message sent for topic: {queueName}");
+            
             Task task = new Task(() =>
             {
                 var factory = new ConnectionFactory()
@@ -104,7 +106,7 @@ namespace Payment.Communication.RabbitMq
             Dispose(true);
         }
 
-        public RabbitMqPublisher(ILogger logger, IOptions<RabbitMqConfig> rabbitMqConfig) : this()
+        public RabbitMqPublisher(ILogger<RabbitMqPublisher> logger, IOptions<RabbitMqConfig> rabbitMqConfig) : this()
         {
             _logger = logger;
             _outstandingConfirms = new ConcurrentDictionary<ulong, string>();

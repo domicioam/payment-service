@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Payment.Communication.RabbitMq;
 using Payment.EventSourcing;
-using PaymentGatewayWorker.EventSourcing;
+using Payment.EventSourcing.Repository;
 
 namespace AuthorizeService
 {

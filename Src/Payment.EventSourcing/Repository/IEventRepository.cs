@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Payment.EventSourcing
+namespace Payment.EventSourcing.Repository
 {
     public interface IEventRepository
     {
