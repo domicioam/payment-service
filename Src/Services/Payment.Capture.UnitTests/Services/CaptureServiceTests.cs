@@ -13,9 +13,12 @@ namespace Payment.Capture.UnitTests.Services
         {
             var authorisationId = Guid.NewGuid();
             decimal totalAllowed = 25m;
+            decimal amount = 10m;
             var captureRepository = new Mock<CaptureRepository>();
             captureRepository.Setup(c => c.GetAmountLeftToCapture(authorisationId)).Returns(totalAllowed);
             var captureService = new CaptureService(captureRepository.Object);
+            bool canCapture = captureService.CanExecuteCapture(authorisationId, amount);
+            Assert.True(canCapture);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Payment.Capture.Services
             throw new NotImplementedException();
         }
 
-        public bool CanExecuteCapture(Guid authorisationId)
+        public bool CanExecuteCapture(Guid authorisationId, decimal amount)
         {
             //TODO: concurrency problem between the time of the verification and the event registration (must be atomic)
             throw new NotImplementedException();
