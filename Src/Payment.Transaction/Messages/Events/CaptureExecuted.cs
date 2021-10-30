@@ -18,5 +18,23 @@ namespace Payment.EventSourcing.Messages
             Amount = this.Amount;
             AggregateId = this.AggregateId;
         }
+        
+        protected bool Equals(CaptureExecuted other)
+        {
+            return Amount == other.Amount;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((CaptureExecuted) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Amount.GetHashCode();
+        }
     }
 }

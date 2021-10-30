@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Transactions;
+using System.Threading;
 using MediatR;
 using Moq;
 using Payment.EventSourcing.Messages;
+using Payment.Transaction.Aggregates;
 using Xunit;
-using TransactionStatus = Payment.Transaction.Aggregates.TransactionStatus;
 
 namespace Payment.Transaction.UnitTests.Aggregates
 {
@@ -17,7 +17,7 @@ namespace Payment.Transaction.UnitTests.Aggregates
             _mediator = new Mock<IMediator>();
         }
 
-        
+
         [Fact]
         public void Should_initialize_transaction()
         {
@@ -28,7 +28,7 @@ namespace Payment.Transaction.UnitTests.Aggregates
 
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
             transaction.Apply(authorisationCreated);
-            
+
             Assert.Equal(merchantId, transaction.MerchantId);
             Assert.Equal(authorisationId, transaction.Id);
             Assert.Equal(amount, transaction.Amount);
@@ -69,11 +69,11 @@ namespace Payment.Transaction.UnitTests.Aggregates
             transaction.Apply(captureExecuted);
             var refundExecuted = new RefundExecuted(authorisationId, amount, 3);
             transaction.Apply(refundExecuted);
-            
+
             Assert.Equal(transaction.Amount, amount);
             Assert.Equal(TransactionStatus.Refunded, transaction.Status);
         }
-        
+
         [Fact]
         public void Should_not_refund_when_refund_was_rejected()
         {
@@ -90,9 +90,31 @@ namespace Payment.Transaction.UnitTests.Aggregates
             transaction.Apply(captureExecuted);
             var rejected = new RefundRejected(authorisationId, 3);
             transaction.Apply(rejected);
-            
+
             Assert.Equal(amount - capturedAmount, transaction.Amount);
             Assert.Equal(TransactionStatus.Active, transaction.Status);
+        }
+
+        [Fact]
+        public void Should_process_capture()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            var captureAmount = 10m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            transaction.Apply(authorisationCreated);
+            var captureCommand = new CaptureCommand(authorisationId, captureAmount);
+            transaction.Process(captureCommand);
+
+            var expected = new CaptureExecuted(authorisationId, captureAmount, 2);
+            _mediator.Verify(
+                m => m.Publish(
+                    It.Is<CaptureExecuted>(env =>
+                        env.Amount == expected.Amount && env.Version == expected.Version &&
+                        env.AggregateId == expected.AggregateId), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
