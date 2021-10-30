@@ -26,6 +26,11 @@ namespace Payment.EventSourcing
             _rabbitMqPublisher = rabbitMqPublisher;
         }
 
+        /// <summary>
+        /// Saves the event and performs an event publish atomically.
+        /// </summary>
+        /// <param name="event">Event to be stored.</param>
+        /// <typeparam name="T">Event type.</typeparam>
         public async Task SaveAsync<T>(T @event) where T : Event
         {
             var loggedEvent = new LoggedEvent()
@@ -35,11 +40,11 @@ namespace Payment.EventSourcing
                 Data = JsonSerializer.Serialize(@event, @event.GetType())
             };
 
+            const string storedEventsQueue = "stored-events";
             try
             {
                 await _eventRepository.SaveAsync(loggedEvent);
                 string message = JsonSerializer.Serialize(@event);
-                const string storedEventsQueue = "stored-events";
                 await _rabbitMqPublisher.SendMessageAsync(message, storedEventsQueue);
             }
             catch(Exception e)
