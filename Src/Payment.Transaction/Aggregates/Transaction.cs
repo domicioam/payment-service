@@ -8,7 +8,9 @@ namespace Payment.Capture.Aggregates
     public enum TransactionStatus
     {
         Active,
-        Voided
+        Voided,
+        Refunded,
+        Completed
     }
     
     public class Transaction
@@ -46,7 +48,7 @@ namespace Payment.Capture.Aggregates
         public void Process(CaptureCommand captureCommand)
         {
             var (aggregateId, amount) = captureCommand;
-            if (aggregateId != Id || Status == TransactionStatus.Voided)
+            if (aggregateId != Id || Status is TransactionStatus.Voided or TransactionStatus.Refunded or TransactionStatus.Completed)
                 throw new InvalidOperationException($"[Process] Invalid operation for Capture with id: {aggregateId}.");
 
             if (amount > Amount)
@@ -61,7 +63,7 @@ namespace Payment.Capture.Aggregates
         public void Process(RefundCommand refundCommand)
         {
             var (aggregateId, amount) = refundCommand;
-            if (aggregateId != Id || Status == TransactionStatus.Voided)
+            if (aggregateId != Id || Status is TransactionStatus.Voided or TransactionStatus.Refunded)
                 throw new InvalidOperationException($"[Process] Invalid operation for Refund with id: {aggregateId}.");
 
             if (amount > Amount)
@@ -96,7 +98,7 @@ namespace Payment.Capture.Aggregates
         private void Apply(RefundExecuted refundExecuted)
         {
             Version++;
-            Status = TransactionStatus.Voided;
+            Status = TransactionStatus.Refunded;
         }
         
         private void Apply(RefundRejected refundRejected)
