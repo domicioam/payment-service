@@ -42,7 +42,7 @@ namespace AuthoriseService.UnitTests.Application
             authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(_fixture.Command.MerchantId, _fixture.CreditCard, _fixture.Command.Currency, _fixture.Command.Amount), Times.Once);
-            mediator.Verify(m => m.Send(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(m => m.Publish(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [Fact]
@@ -61,7 +61,7 @@ namespace AuthoriseService.UnitTests.Application
             authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
-            mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(m => m.Publish(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [Fact]
@@ -80,7 +80,7 @@ namespace AuthoriseService.UnitTests.Application
             authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
-            mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(m => m.Publish(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [Fact]
@@ -99,7 +99,7 @@ namespace AuthoriseService.UnitTests.Application
             authoriseAppService.AuthoriseAsync(_fixture.Command);
             
             authorisationService.Verify(a => a.CreateAuthorisation(It.IsAny<Guid>(), It.IsAny<CreditCard>(), It.IsAny<Currency>(), It.IsAny<decimal>()), Times.Never);
-            mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(m => m.Publish(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Once);
         }
         
         [Fact]
@@ -119,8 +119,8 @@ namespace AuthoriseService.UnitTests.Application
             var authoriseAppService = new AuthoriseApplicationService(logger.Object, mediator.Object, authorisationService.Object, cardService.Object, merchantService.Object);
             authoriseAppService.AuthoriseAsync(_fixture.Command);
             
-            mediator.Verify(m => m.Send(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Never);
-            mediator.Verify(m => m.Send(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Never);
+            mediator.Verify(m => m.Publish(It.IsAny<AuthorisationRejected>(), It.IsAny<CancellationToken>()), Times.Never);
+            mediator.Verify(m => m.Publish(It.IsAny<AuthorisationCreated>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }
