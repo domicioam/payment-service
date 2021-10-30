@@ -6,7 +6,7 @@ namespace Payment.Capture.Application
 {
     public class CaptureApplicationService
     {
-        public CaptureApplicationService(IMediator mediator, CanVerifyCapture captureVerificatorObject)
+        public CaptureApplicationService(IMediator mediator, CanVerifyCapture canVerifyCapture)
         {
             throw new System.NotImplementedException();
         }
