@@ -36,7 +36,7 @@ namespace AuthorizeService
         private async Task StartListeningForAuthorisationRequests()
         {
             _rabbitMqConsumer.MessageReceived += ProcessAuthoriseRequest;
-            await _rabbitMqConsumer.StartListeningForRequestsAsync("authorise");
+            await _rabbitMqConsumer.StartListeningForRequestsAsync(Queues.Authorise);
         }
 
         private async void ProcessAuthoriseRequest(string message)

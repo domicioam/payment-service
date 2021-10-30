@@ -41,12 +41,11 @@ namespace Payment.EventSourcing
                 Version = @event.Version
             };
 
-            const string storedEventsQueue = "stored-events";
             try
             {
                 await _eventRepository.SaveAsync(loggedEvent);
                 string message = JsonSerializer.Serialize(@event);
-                await _rabbitMqPublisher.SendMessageAsync(message, storedEventsQueue);
+                await _rabbitMqPublisher.SendMessageAsync(message, Queues.StoredEvents);
             }
             catch(Exception e)
             {

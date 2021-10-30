@@ -5,8 +5,15 @@ using Payment.EventSourcing.Messages;
 
 namespace Payment.Capture.Aggregates
 {
+    public enum TransactionStatus
+    {
+        Active,
+        Voided
+    }
+    
     public class Transaction
     {
+        //TODO: Encapsulate in domain event publisher
         private readonly IMediator _mediator;
 
         public Transaction(IMediator mediator)
@@ -18,6 +25,7 @@ namespace Payment.Capture.Aggregates
         public Guid MerchantId { get; private set; }
         public int Version { get; private set; }
         public decimal Amount { get; private set; }
+        public TransactionStatus Status { get; private set; }
 
         public void Apply(Event @event)
         {
@@ -37,16 +45,32 @@ namespace Payment.Capture.Aggregates
         
         public void Process(CaptureCommand captureCommand)
         {
-            if (captureCommand.AggregateId != Id)
-                throw new InvalidOperationException($"[Process] The aggregate id provided is invalid: {captureCommand.AggregateId}.");
+            var (aggregateId, amount) = captureCommand;
+            if (aggregateId != Id || Status == TransactionStatus.Voided)
+                throw new InvalidOperationException($"[Process] Invalid operation for Capture with id: {aggregateId}.");
 
-            if (captureCommand.Amount > Amount)
+            if (amount > Amount)
             {
                 _mediator.Publish(new CaptureRejected(Id, Version + 1));
                 return;
             }
 
-            _mediator.Publish(new CaptureExecuted(Id, captureCommand.Amount, Version + 1));
+            _mediator.Publish(new CaptureExecuted(Id, amount, Version + 1));
+        }
+        
+        public void Process(RefundCommand refundCommand)
+        {
+            var (aggregateId, amount) = refundCommand;
+            if (aggregateId != Id || Status == TransactionStatus.Voided)
+                throw new InvalidOperationException($"[Process] Invalid operation for Refund with id: {aggregateId}.");
+
+            if (amount > Amount)
+            {
+                _mediator.Publish(new RefundRejected(Id, Version + 1));
+                return;
+            }
+
+            _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
         }
         
         private void Apply(AuthorisationCreated authorisationCreated)
@@ -54,6 +78,7 @@ namespace Payment.Capture.Aggregates
             Id = authorisationCreated.AggregateId;
             MerchantId = authorisationCreated.MerchantId;
             Amount = authorisationCreated.Amount;
+            Status = TransactionStatus.Active;
             Version++;
         }
 
@@ -64,6 +89,17 @@ namespace Payment.Capture.Aggregates
         }
 
         private void Apply(CaptureRejected captureRejected)
+        {
+            Version++;
+        }
+
+        private void Apply(RefundExecuted refundExecuted)
+        {
+            Version++;
+            Status = TransactionStatus.Voided;
+        }
+        
+        private void Apply(RefundRejected refundRejected)
         {
             Version++;
         }
