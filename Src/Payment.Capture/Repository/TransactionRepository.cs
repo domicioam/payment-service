@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MediatR;
-using Payment.Capture.Aggregates;
 using Payment.EventSourcing;
 using Payment.EventSourcing.Repository;
 
@@ -19,12 +18,12 @@ namespace Payment.Capture.Repository
             _eventRepository = eventRepository;
             _mediator = mediator;
         }
-        public virtual async Task<Transaction> GetByIdAsync(Guid aggregateId)
+        public virtual async Task<Transaction.Aggregates.Transaction> GetByIdAsync(Guid aggregateId)
         {
             var events = await _eventRepository.AllAsync(aggregateId);
             var deserializedEvents = events.Select(e => JsonSerializer.Deserialize<Event>(e.Data));
             
-            var transaction = new Transaction(_mediator);
+            var transaction = new Transaction.Aggregates.Transaction(_mediator);
 
             foreach (var @event in deserializedEvents)
             {

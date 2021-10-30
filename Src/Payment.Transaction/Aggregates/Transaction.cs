@@ -3,7 +3,7 @@ using MediatR;
 using Payment.EventSourcing;
 using Payment.EventSourcing.Messages;
 
-namespace Payment.Capture.Aggregates
+namespace Payment.Transaction.Aggregates
 {
     public enum TransactionStatus
     {
@@ -41,6 +41,12 @@ namespace Payment.Capture.Aggregates
                     break;
                 case CaptureRejected captureRejected:
                     Apply(captureRejected);
+                    break;
+                case RefundExecuted refundExecuted:
+                    Apply(refundExecuted);
+                    break;
+                case RefundRejected refundRejected:
+                    Apply(refundRejected);
                     break;
             }
         }
@@ -81,29 +87,30 @@ namespace Payment.Capture.Aggregates
             MerchantId = authorisationCreated.MerchantId;
             Amount = authorisationCreated.Amount;
             Status = TransactionStatus.Active;
-            Version++;
+            Version = 1;
         }
 
         private void Apply(CaptureExecuted captureExecuted)
         {
             Amount -= captureExecuted.Amount;
-            Version++;
+            Version = captureExecuted.Version;
         }
 
         private void Apply(CaptureRejected captureRejected)
         {
-            Version++;
+            Version = captureRejected.Version;
         }
 
         private void Apply(RefundExecuted refundExecuted)
         {
-            Version++;
+            Amount = refundExecuted.Amount;
+            Version = refundExecuted.Version;
             Status = TransactionStatus.Refunded;
         }
         
         private void Apply(RefundRejected refundRejected)
         {
-            Version++;
+            Version = refundRejected.Version;
         }
     }
 }
