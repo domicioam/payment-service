@@ -61,7 +61,7 @@ namespace Payment.Capture.UnitTests.Application
             captureApplicationService.Capture(captureCommand);
             
             captureVerificator.Verify(c => c.CanExecuteCapture(authorisationId, amount), Times.Once);
-            mediator.Verify(m => m.Publish(It.IsAny<CaptureRejected>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(m => m.Publish(It.IsAny<CaptureRejected>(), It.IsAny<CancellationToken>()), Times.Never);
             mediator.Verify(m => m.Publish(It.IsAny<CaptureExecuted>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
