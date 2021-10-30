@@ -4,7 +4,7 @@ using Payment.Capture.Repository;
 using Payment.Capture.Services;
 using Xunit;
 
-namespace Payment.Capture.UnitTests
+namespace Payment.Capture.UnitTests.Services
 {
     public class CaptureServiceTests
     {
