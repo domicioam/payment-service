@@ -44,7 +44,6 @@ namespace Payment.EventSourcing
             const string storedEventsQueue = "stored-events";
             try
             {
-                //TODO: Event versioning
                 await _eventRepository.SaveAsync(loggedEvent);
                 string message = JsonSerializer.Serialize(@event);
                 await _rabbitMqPublisher.SendMessageAsync(message, storedEventsQueue);
