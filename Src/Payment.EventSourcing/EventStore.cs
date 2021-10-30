@@ -37,7 +37,8 @@ namespace Payment.EventSourcing
             {
                 Action = @event.Name,
                 AggregateId = @event.AggregateId,
-                Data = JsonSerializer.Serialize(@event, @event.GetType())
+                Data = JsonSerializer.Serialize(@event, @event.GetType()),
+                Version = @event.Version
             };
 
             const string storedEventsQueue = "stored-events";

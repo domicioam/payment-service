@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Payment.EventSourcing.Messages
 {
-    public class CaptureExecuted : VersionedEvent, INotification
+    public class CaptureExecuted : Event, INotification
     {
         public CaptureExecuted(Guid aggregateId, decimal Amount, int version): base(version)
         {

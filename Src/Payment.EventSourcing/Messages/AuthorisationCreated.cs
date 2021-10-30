@@ -5,7 +5,7 @@ namespace Payment.EventSourcing.Messages
 {
     public class AuthorisationCreated : Event, INotification
     {
-        public AuthorisationCreated(Guid MerchantId, Guid AuthorisationId, decimal amount)
+        public AuthorisationCreated(Guid MerchantId, Guid AuthorisationId, decimal amount): base(version: 0)
         {
             this.MerchantId = MerchantId;
             AggregateId = AuthorisationId;
