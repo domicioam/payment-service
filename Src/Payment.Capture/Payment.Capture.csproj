@@ -15,8 +15,4 @@
       <ProjectReference Include="..\Payment.EventSourcing\Payment.EventSourcing.csproj" />
       <ProjectReference Include="..\Payment.Transaction\Payment.Transaction.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Aggregates" />
-    </ItemGroup>
 </Project>
