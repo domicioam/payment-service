@@ -48,6 +48,9 @@ namespace Payment.Transaction.Aggregates
                 case RefundRejected refundRejected:
                     Apply(refundRejected);
                     break;
+                case CaptureCompleted captureCompleted:
+                    Apply(captureCompleted);
+                    break;
             }
         }
         
@@ -60,6 +63,12 @@ namespace Payment.Transaction.Aggregates
             if (amount > Amount)
             {
                 _mediator.Publish(new CaptureRejected(Id, Version + 1));
+                return;
+            }
+
+            if (amount == Amount)
+            {
+                _mediator.Publish(new CaptureCompleted(Id, Version + 1));
                 return;
             }
 
@@ -111,6 +120,13 @@ namespace Payment.Transaction.Aggregates
         private void Apply(RefundRejected refundRejected)
         {
             Version = refundRejected.Version;
+        }
+        
+        private void Apply(CaptureCompleted captureCompleted)
+        {
+            Amount = 0;
+            Version = captureCompleted.Version;
+            Status = TransactionStatus.Completed;
         }
     }
 }

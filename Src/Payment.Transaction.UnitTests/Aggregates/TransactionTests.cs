@@ -16,8 +16,7 @@ namespace Payment.Transaction.UnitTests.Aggregates
         {
             _mediator = new Mock<IMediator>();
         }
-
-
+        
         [Fact]
         public void Should_initialize_transaction()
         {
@@ -41,12 +40,13 @@ namespace Payment.Transaction.UnitTests.Aggregates
             var merchantId = Guid.NewGuid();
             var authorisationId = Guid.NewGuid();
             const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            const int eventVersion = 3;
 
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
-            transaction.Apply(authorisationCreated);
-            var capturedAmount = 10m;
-            var eventVersion = 3;
             var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, eventVersion);
+            
+            transaction.Apply(authorisationCreated);
             transaction.Apply(captureExecuted);
 
             Assert.Equal(amount - capturedAmount, transaction.Amount);
@@ -63,11 +63,12 @@ namespace Payment.Transaction.UnitTests.Aggregates
 
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
             transaction.Apply(authorisationCreated);
-            var capturedAmount = 10m;
-            var eventVersion = 3;
+            const decimal capturedAmount = 10m;
+            const int eventVersion = 3;
             var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, eventVersion);
-            transaction.Apply(captureExecuted);
             var refundExecuted = new RefundExecuted(authorisationId, amount, 3);
+            
+            transaction.Apply(captureExecuted);
             transaction.Apply(refundExecuted);
 
             Assert.Equal(transaction.Amount, amount);
@@ -84,11 +85,12 @@ namespace Payment.Transaction.UnitTests.Aggregates
 
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
             transaction.Apply(authorisationCreated);
-            var capturedAmount = 10m;
-            var eventVersion = 3;
+            const decimal capturedAmount = 10m;
+            const int eventVersion = 3;
             var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, eventVersion);
-            transaction.Apply(captureExecuted);
             var rejected = new RefundRejected(authorisationId, 3);
+            
+            transaction.Apply(captureExecuted);
             transaction.Apply(rejected);
 
             Assert.Equal(amount - capturedAmount, transaction.Amount);
@@ -102,11 +104,11 @@ namespace Payment.Transaction.UnitTests.Aggregates
             var merchantId = Guid.NewGuid();
             var authorisationId = Guid.NewGuid();
             const decimal amount = 20m;
-            var captureAmount = 10m;
-
+            const decimal captureAmount = 10m;
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
-            transaction.Apply(authorisationCreated);
             var captureCommand = new CaptureCommand(authorisationId, captureAmount);
+
+            transaction.Apply(authorisationCreated);
             transaction.Process(captureCommand);
 
             var expected = new CaptureExecuted(authorisationId, captureAmount, 2);
@@ -115,6 +117,99 @@ namespace Payment.Transaction.UnitTests.Aggregates
                     It.Is<CaptureExecuted>(env =>
                         env.Amount == expected.Amount && env.Version == expected.Version &&
                         env.AggregateId == expected.AggregateId), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void Should_throw_when_try_to_capture_in_refunded_status()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
+            var refundExecuted = new RefundExecuted(authorisationId, amount, 3);
+            var captureCommand = new CaptureCommand(authorisationId, 10m);
+            
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            transaction.Apply(refundExecuted);
+            
+            Assert.Throws<InvalidOperationException>(() => transaction.Process(captureCommand));
+            Assert.Equal(TransactionStatus.Refunded, transaction.Status);
+            Assert.Equal(3, transaction.Version);
+        }
+
+        [Fact]
+        public void Should_complete_when_two_captures_with_total_amount()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var firstCaptureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
+            var captureCommand = new CaptureCommand(authorisationId, 10m);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(firstCaptureExecuted);
+            transaction.Process(captureCommand);
+
+            var expected = new CaptureCompleted(authorisationId, 3);
+            _mediator.Verify(
+                m => m.Publish(
+                    It.Is<CaptureCompleted>(env =>
+                        env.Version == expected.Version &&
+                        env.AggregateId == expected.AggregateId), It.IsAny<CancellationToken>()), Times.Once);
+        }
+        
+        [Fact]
+        public void Should_status_be_completed_after_capture_completed()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var firstCaptureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
+            var captureCompleted = new CaptureCompleted(authorisationId, 3);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(firstCaptureExecuted);
+            transaction.Apply(captureCompleted);
+
+            Assert.Equal(TransactionStatus.Completed, transaction.Status);
+            Assert.Equal(3, transaction.Version);
+        }
+        
+        [Fact]
+        public void Should_throw_when_try_to_capture_in_completed_status()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
+            var captureCompleted = new CaptureCompleted(authorisationId, 3);
+
+            var captureCommand = new CaptureCommand(authorisationId, 10m);
+            
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            transaction.Apply(captureCompleted);
+            
+            Assert.Throws<InvalidOperationException>(() => transaction.Process(captureCommand));
+            Assert.Equal(TransactionStatus.Completed, transaction.Status);
+            Assert.Equal(3, transaction.Version);
         }
     }
 }
