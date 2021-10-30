@@ -36,7 +36,7 @@ namespace AuthorizeService.Application
                     var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
                         authoriseCommand.CreditCard,
                         authoriseCommand.Currency, authoriseCommand.Amount);
-                    await _mediator.Publish(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id));
+                    await _mediator.Publish(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id, authoriseCommand.Amount));
                     _logger.LogInformation($"[Authorise] Authorisation created with id: {authorisation.Id}");
                     return;
                 }

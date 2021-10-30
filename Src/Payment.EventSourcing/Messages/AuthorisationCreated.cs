@@ -5,19 +5,22 @@ namespace Payment.EventSourcing.Messages
 {
     public class AuthorisationCreated : Event, INotification
     {
-        public AuthorisationCreated(Guid MerchantId, Guid AuthorisationId)
+        public AuthorisationCreated(Guid MerchantId, Guid AuthorisationId, decimal amount)
         {
             this.MerchantId = MerchantId;
-            this.AuthorisationId = AuthorisationId;
+            AggregateId = AuthorisationId;
+            Amount = amount;
         }
 
-        public Guid MerchantId { get; init; }
-        public Guid AuthorisationId { get; init; }
+        public decimal Amount { get; init; }
 
-        public void Deconstruct(out Guid MerchantId, out Guid AuthorisationId)
+        public Guid MerchantId { get; init; }
+
+        public void Deconstruct(out Guid MerchantId, out Guid AuthorisationId, out decimal Amount)
         {
             MerchantId = this.MerchantId;
-            AuthorisationId = this.AuthorisationId;
+            AuthorisationId = this.AggregateId;
+            Amount = this.Amount;
         }
     }
 }

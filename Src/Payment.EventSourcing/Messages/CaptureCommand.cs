@@ -2,5 +2,5 @@
 
 namespace Payment.EventSourcing.Messages
 {
-    public record CaptureCommand(Guid AuthorisationId, decimal Amount);
+    public record CaptureCommand(Guid AggregateId, decimal Amount);
 }

@@ -1,41 +1,31 @@
 ﻿using System;
-using MediatR;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Payment.Capture.Services;
+using Payment.Capture.Repository;
 using Payment.EventSourcing.Messages;
 
 namespace Payment.Capture.Application
 {
     public class CaptureApplicationService
     {
-        private readonly IMediator _mediator;
-        private readonly CanVerifyCapture _canVerifyCapture;
+        private readonly TransactionRepository _transactionRepository;
         private readonly ILogger<CaptureApplicationService> _logger;
 
-        public CaptureApplicationService(IMediator mediator, CanVerifyCapture canVerifyCapture, ILogger<CaptureApplicationService> logger)
+        public CaptureApplicationService(TransactionRepository transactionRepository, ILogger<CaptureApplicationService> logger)
         {
-            _mediator = mediator;
-            _canVerifyCapture = canVerifyCapture;
+            _transactionRepository = transactionRepository;
             _logger = logger;
         }
 
-        public void Capture(CaptureCommand captureCommand)
+        public async Task Capture(CaptureCommand captureCommand)
         {
             var (authorisationId, amount) = captureCommand;
             _logger.LogInformation($"[Capture] Capture started for authorisation: {authorisationId}");
-                
+            
             try
             {
-                var canCapture = _canVerifyCapture.CanExecuteCapture(authorisationId, amount);
-                if (canCapture)
-                {
-                    _mediator.Publish(new CaptureExecuted(authorisationId, amount));
-                    _logger.LogInformation($"[Capture] Capture accepted for authorisation: {authorisationId}");
-                    return;
-                }
-
-                _mediator.Publish(new CaptureRejected(authorisationId));
-                _logger.LogWarning($"[Capture] Capture rejected for authorisation id: {authorisationId}");
+                var transaction = await _transactionRepository.GetByIdAsync(captureCommand.AggregateId);
+                transaction.Process(captureCommand);
             }
             catch (Exception e)
             {

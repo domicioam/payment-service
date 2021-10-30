@@ -16,5 +16,7 @@ namespace Payment.EventSourcing
         public string Data { get; set; }
         [Required]
         public DateTime TimeStamp { get; set; }
+        [Required]
+        public int Version { get; set; }
     }
 }
