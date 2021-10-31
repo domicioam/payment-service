@@ -338,5 +338,42 @@ namespace Payment.Transaction.UnitTests.Aggregates
 
             _mediator.Verify(m => m.Publish(It.Is<RefundExecuted>(r => r.Version == 3 && r.Amount == refundAmount), It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public void Should_reject_capture_above_available_amount()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureCommand = new CaptureCommand(authorisationId, 30m);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Process(captureCommand);
+
+            _mediator.Verify(m => m.Publish(It.Is<CaptureRejected>(c => c.Version == 2), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void Should_apply_partial_refund()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, 10m, 2);
+            var refundExecuted = new RefundExecuted(authorisationId, 10m, 3);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            transaction.Apply(refundExecuted);
+
+            Assert.Equal(amount, transaction.AvailableAmount);
+            Assert.Equal(TransactionStatus.Active, transaction.Status);
+        }
     }
 }
