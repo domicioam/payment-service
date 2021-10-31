@@ -6,12 +6,12 @@ using Payment.EventSourcing.Messages;
 
 namespace Payment.Refund.Application
 {
-    public class RefundApplicationService
+    public class RefundService
     {
         private readonly TransactionRepository _transactionRepository;
-        private readonly ILogger<RefundApplicationService> _logger;
+        private readonly ILogger<RefundService> _logger;
         
-        public RefundApplicationService(TransactionRepository transactionRepository, ILogger<RefundApplicationService> logger)
+        public RefundService(TransactionRepository transactionRepository, ILogger<RefundService> logger)
         {
             _transactionRepository = transactionRepository;
             _logger = logger;

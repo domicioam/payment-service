@@ -1,6 +1,5 @@
 using System;
 using AuthorizeService;
-using AuthorizeService.Application;
 using Payment.EventSourcing;
 using Payment.EventSourcing.Messages;
 

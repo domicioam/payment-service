@@ -4,14 +4,14 @@ using Microsoft.Extensions.Logging;
 using Payment.Capture.Repository;
 using Payment.EventSourcing.Messages;
 
-namespace Payment.Capture.Application
+namespace Payment.Capture.Services
 {
-    public class CaptureApplicationService
+    public class CaptureService
     {
         private readonly TransactionRepository _transactionRepository;
-        private readonly ILogger<CaptureApplicationService> _logger;
+        private readonly ILogger<CaptureService> _logger;
 
-        public CaptureApplicationService(TransactionRepository transactionRepository, ILogger<CaptureApplicationService> logger)
+        public CaptureService(TransactionRepository transactionRepository, ILogger<CaptureService> logger)
         {
             _transactionRepository = transactionRepository;
             _logger = logger;

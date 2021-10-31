@@ -1,4 +1,3 @@
-using AuthorizeService.Application;
 using AuthorizeService.Factories;
 using AuthorizeService.Repository;
 using AuthorizeService.Services;
@@ -26,12 +25,12 @@ namespace AuthorizeService
                     services.Configure<RabbitMqConfig>(rabbitMqConfig);
                     services.AddTransient<RabbitMqConsumer>();
                     services.AddTransient<AuthorisationFactory>();
-                    services.AddTransient<AuthoriseApplicationService>();
+                    services.AddTransient<AuthoriseService>();
                     services.AddTransient<EventStore>();
                     services.AddHostedService<Worker>();
                     services.AddMediatR(typeof(Program));
-                    services.AddTransient<CanValidateCreditCard, AuthorisationService>();
-                    services.AddTransient<CanValidateMerchant, AuthorisationService>();
+                    services.AddTransient<CanValidateCreditCard, ValidationService>();
+                    services.AddTransient<CanValidateMerchant, ValidationService>();
                     services.AddTransient<MerchantRepository>();
                     services.AddTransient<IEventRepository, EventRepository>();
                 });

@@ -1,5 +1,4 @@
 using System;
-using AuthorizeService.Application;
 using AuthorizeService.Entities;
 using Payment.EventSourcing;
 using Payment.EventSourcing.Messages;

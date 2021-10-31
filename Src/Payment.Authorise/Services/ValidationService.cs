@@ -6,11 +6,11 @@ using Payment.EventSourcing.Messages;
 
 namespace AuthorizeService.Services
 {
-    public class AuthorisationService : CanValidateMerchant, CanValidateCreditCard
+    public class ValidationService : CanValidateMerchant, CanValidateCreditCard
     {
         private readonly MerchantRepository _merchantRepository;
 
-        public AuthorisationService(MerchantRepository merchantRepository)
+        public ValidationService(MerchantRepository merchantRepository)
         {
             _merchantRepository = merchantRepository;
         }

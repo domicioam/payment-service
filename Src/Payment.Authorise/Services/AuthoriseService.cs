@@ -1,22 +1,21 @@
 using System;
 using System.Threading.Tasks;
 using AuthorizeService.Factories;
-using AuthorizeService.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Payment.EventSourcing.Messages;
 
-namespace AuthorizeService.Application
+namespace AuthorizeService.Services
 {
-    public class AuthoriseApplicationService
+    public class AuthoriseService
     {
-        private readonly ILogger<AuthoriseApplicationService> _logger;
+        private readonly ILogger<AuthoriseService> _logger;
         private readonly IMediator _mediator;
         private readonly AuthorisationFactory _authorisationFactory;
         private readonly CanValidateCreditCard _cardService;
         private readonly CanValidateMerchant _canValidateMerchant;
 
-        public AuthoriseApplicationService(ILogger<AuthoriseApplicationService> logger, IMediator mediator, 
+        public AuthoriseService(ILogger<AuthoriseService> logger, IMediator mediator, 
             AuthorisationFactory authorisationFactory, CanValidateCreditCard cardService, CanValidateMerchant canValidateMerchant)
         {
             _logger = logger;

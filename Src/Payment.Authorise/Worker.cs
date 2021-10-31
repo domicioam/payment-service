@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using AuthorizeService.Application;
+using AuthorizeService.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Payment.Communication.RabbitMq;
@@ -14,13 +14,13 @@ namespace AuthorizeService
     {
         private readonly ILogger<Worker> _logger;
         private readonly RabbitMqConsumer _rabbitMqConsumer;
-        private readonly AuthoriseApplicationService _authoriseApplicationService;
+        private readonly AuthoriseService _authoriseService;
 
-        public Worker(ILogger<Worker> logger, RabbitMqConsumer rabbitMqConsumer, AuthoriseApplicationService authoriseApplicationService)
+        public Worker(ILogger<Worker> logger, RabbitMqConsumer rabbitMqConsumer, AuthoriseService authoriseService)
         {
             _logger = logger;
             _rabbitMqConsumer = rabbitMqConsumer;
-            _authoriseApplicationService = authoriseApplicationService;
+            _authoriseService = authoriseService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -44,7 +44,7 @@ namespace AuthorizeService
             try
             {
                 var authoriseDto = JsonSerializer.Deserialize<AuthorisationCommand>(message);
-                await _authoriseApplicationService.AuthoriseAsync(authoriseDto);
+                await _authoriseService.AuthoriseAsync(authoriseDto);
             }
             catch (Exception e)
             {

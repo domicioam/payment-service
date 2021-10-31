@@ -20,7 +20,7 @@ namespace AuthoriseService.UnitTests.Services
             var id = Guid.NewGuid();
             merchantRepository.Setup(m => m.GetByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(new Merchant(id, true));
-            var authorisationService = new AuthorisationService(merchantRepository.Object);
+            var authorisationService = new ValidationService(merchantRepository.Object);
             var result = await authorisationService.IsMerchantValidAsync(id);
             Assert.True(result);
         }
@@ -32,7 +32,7 @@ namespace AuthoriseService.UnitTests.Services
             var id = Guid.NewGuid();
             merchantRepository.Setup(m => m.GetByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(new Merchant(id, false));
-            var authorisationService = new AuthorisationService(merchantRepository.Object);
+            var authorisationService = new ValidationService(merchantRepository.Object);
             var result = await authorisationService.IsMerchantValidAsync(id);
             Assert.False(result);
         }
@@ -43,7 +43,7 @@ namespace AuthoriseService.UnitTests.Services
             var merchantRepository = new Mock<MerchantRepository>();
             var creditCard = new CreditCard("1234", new DateTime(2023, 10, 20), "123");
             var validUntil = new DateTime(2024, 10, 20);
-            var authorisationService = new AuthorisationService(merchantRepository.Object);
+            var authorisationService = new ValidationService(merchantRepository.Object);
             var result = authorisationService.IsCreditCardValid(creditCard, validUntil);
             Assert.True(result);
         }
@@ -54,7 +54,7 @@ namespace AuthoriseService.UnitTests.Services
             var merchantRepository = new Mock<MerchantRepository>();
             var creditCard = new CreditCard("1234", new DateTime(2025, 10, 20), "123");
             var validUntil = new DateTime(2024, 10, 20);
-            var authorisationService = new AuthorisationService(merchantRepository.Object);
+            var authorisationService = new ValidationService(merchantRepository.Object);
             var result = authorisationService.IsCreditCardValid(creditCard, validUntil);
             Assert.False(result);
         }
