@@ -272,5 +272,71 @@ namespace Payment.Transaction.UnitTests.Aggregates
                     It.Is<RefundCompleted>(n => 
                         n.Version == 5), It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public void Should_send_refund_completed_after_process_command()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureCompleted = new CaptureCompleted(authorisationId, 2);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureCompleted);
+
+            var refundCommand = new RefundCommand(authorisationId, amount);
+
+            transaction.Process(refundCommand);
+
+            _mediator.Verify(m => m.Publish(It.Is<RefundCompleted>(r => r.Version == 3), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void Should_send_refund_executed_after_partial_refund()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureCompleted = new CaptureCompleted(authorisationId, 2);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureCompleted);
+
+            var partialAmount = 10m;
+            var refundCommand = new RefundCommand(authorisationId, partialAmount);
+
+            transaction.Process(refundCommand);
+
+            _mediator.Verify(m => m.Publish(It.Is<RefundExecuted>(r => r.Version == 3 && r.Amount == 10m), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void Should_execute_partial_capture_when_refund_is_less_than_captured_amount()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            var partialAmount = 10m;
+            var refundAmount = 5m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, partialAmount, 2);
+
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+
+            var refundCommand = new RefundCommand(authorisationId, refundAmount);
+
+            transaction.Process(refundCommand);
+
+            _mediator.Verify(m => m.Publish(It.Is<RefundExecuted>(r => r.Version == 3 && r.Amount == refundAmount), It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

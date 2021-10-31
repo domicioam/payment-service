@@ -87,29 +87,32 @@ namespace Payment.Transaction.Aggregates
 
             if (Status == TransactionStatus.Completed && amount <= InitialAmount)
             {
-                if (InitialAmount - amount == 0)
-                {
-                    _mediator.Publish(new RefundCompleted(Id, Version + 1));
-                }
-                else
+                if (InitialAmount - amount != 0)
                 {
                     _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
                 }
-            }
-            else if (amount > AvailableAmount)
-            {
-                _mediator.Publish(new RefundRejected(Id, Version + 1));
+                else
+                {
+                    _mediator.Publish(new RefundCompleted(Id, Version + 1));
+                }
             }
             else
             {
-               if (AvailableAmount - amount == 0)
-               {
-                   _mediator.Publish(new RefundCompleted(Id, Version + 1));
-               }
-               else
-               {
-                   _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
-               }
+                if (amount <= AvailableAmount)
+                {
+                    if (AvailableAmount - amount == 0)
+                    {
+                        _mediator.Publish(new RefundCompleted(Id, Version + 1));
+                    }
+                    else
+                    {
+                        _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
+                    }
+                }
+                else
+                {
+                    _mediator.Publish(new RefundRejected(Id, Version + 1));
+                }
             }
         }
         
