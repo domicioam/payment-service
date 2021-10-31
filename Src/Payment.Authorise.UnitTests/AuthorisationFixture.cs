@@ -15,7 +15,7 @@ namespace AuthoriseService.UnitTests
         {
             ExpiryDate = new DateTime(2023, 10, 20);
             CreditCard = new CreditCard("1234", ExpiryDate, "123");
-            Command = new AuthorisationCommand(Guid.NewGuid(), CreditCard, Currency.Eur, 10m);
+            Command = new AuthorisationCommand(Guid.NewGuid(), Guid.NewGuid(), CreditCard, Currency.Eur, 10m);
         }
     }
 }

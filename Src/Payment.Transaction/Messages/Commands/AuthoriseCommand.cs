@@ -2,5 +2,5 @@ using System;
 
 namespace Payment.EventSourcing.Messages
 {
-    public record AuthorisationCommand(Guid MerchantId, CreditCard CreditCard, Currency Currency, decimal Amount);
+    public record AuthorisationCommand(Guid TransactionId, Guid MerchantId, CreditCard CreditCard, Currency Currency, decimal Amount);
 }
