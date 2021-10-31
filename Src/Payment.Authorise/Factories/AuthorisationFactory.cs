@@ -7,9 +7,9 @@ namespace AuthorizeService.Factories
 {
     public class AuthorisationFactory
     {
-        public virtual Authorisation CreateAuthorisation(Guid merchantId, CreditCard creditCard, Currency currency, decimal amount)
+        public virtual Authorisation CreateAuthorisation(Guid transactionId, Guid merchantId, CreditCard creditCard, Currency currency, decimal amount)
         {
-            return new Authorisation(Guid.NewGuid());
+            return new Authorisation(transactionId);
         }
     }
 }

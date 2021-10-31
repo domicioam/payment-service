@@ -27,25 +27,23 @@ namespace AuthorizeService.Services
         
         public async Task AuthoriseAsync(AuthorisationCommand authoriseCommand)
         {
+            var (transactionId, merchantId, creditCard, currency, amount) = authoriseCommand;
             try
             {
-                if (_cardService.IsCreditCardValid(authoriseCommand.CreditCard, DateTime.Today) &&
-                    await _canValidateMerchant.IsMerchantValidAsync(authoriseCommand.MerchantId))
+                if (_cardService.IsCreditCardValid(creditCard, DateTime.Today) && await _canValidateMerchant.IsMerchantValidAsync(merchantId))
                 {
-                    var authorisation = _authorisationFactory.CreateAuthorisation(authoriseCommand.MerchantId,
-                        authoriseCommand.CreditCard,
-                        authoriseCommand.Currency, authoriseCommand.Amount);
-                    await _mediator.Publish(new AuthorisationCreated(authoriseCommand.MerchantId, authorisation.Id, authoriseCommand.Amount));
+                    var authorisation = _authorisationFactory.CreateAuthorisation(transactionId, merchantId, creditCard, currency, amount);
+                    await _mediator.Publish(new AuthorisationCreated(merchantId, authorisation.Id, amount));
                     _logger.LogInformation($"[Authorise] Authorisation created with id: {authorisation.Id}");
                     return;
                 }
 
-                _logger.LogWarning($"[Authorise] Authorisation rejected for merchant with id: {authoriseCommand.MerchantId}");
-                await _mediator.Publish(new AuthorisationRejected(authoriseCommand.MerchantId, authoriseCommand.CreditCard.Number));
+                _logger.LogWarning($"[Authorise] Authorisation rejected for merchant with id: {merchantId}");
+                await _mediator.Publish(new AuthorisationRejected(merchantId, creditCard.Number));
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"[Authorise] Error when trying to authorise command for merchant with id: {authoriseCommand.MerchantId}");
+                _logger.LogError(e, $"[Authorise] Error when trying to authorise command for merchant with id: {merchantId}");
             }
         }
     }
