@@ -114,6 +114,11 @@ namespace Payment.Transaction.Aggregates
             }
         }
 
+        public void Process(VoidCommand voidCommand)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Apply(AuthorisationCreated authorisationCreated)
         {
             Id = authorisationCreated.AggregateId;
