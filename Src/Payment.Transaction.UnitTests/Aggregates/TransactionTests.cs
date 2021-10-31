@@ -423,6 +423,30 @@ namespace Payment.Transaction.UnitTests.Aggregates
                     It.Is<VoidRejected>(t => t.Version == 3 && t.AggregateId == authorisationId),
                     It.IsAny<CancellationToken>()), Times.Once);
         }
+        
+        [Fact]
+        public void Should_not_void_transaction_already_refunded()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, amount, version: 2);
+            var refundExecuted = new RefundExecuted(authorisationId, amount, version: 3);
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            transaction.Apply(refundExecuted);
+
+            var voidCommand = new VoidCommand(authorisationId);
+            transaction.Process(voidCommand);
+
+            _mediator.Verify(m =>
+                m.Publish(
+                    It.Is<VoidRejected>(t => t.Version == 4 && t.AggregateId == authorisationId),
+                    It.IsAny<CancellationToken>()), Times.Once);
+        }
 
         [Fact]
         public void Should_create_transaction_in_not_started_state()

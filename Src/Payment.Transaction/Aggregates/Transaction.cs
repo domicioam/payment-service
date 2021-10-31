@@ -5,6 +5,7 @@ using Payment.EventSourcing.Messages;
 
 namespace Payment.Transaction.Aggregates
 {
+    //TODO: Refactor to state pattern
     public enum TransactionStatus
     {
         Active,
@@ -117,7 +118,15 @@ namespace Payment.Transaction.Aggregates
 
         public void Process(VoidCommand voidCommand)
         {
-            throw new NotImplementedException();
+            if (Id != voidCommand.AggregateId)
+                throw new InvalidOperationException($"[Process] Invalid operation for Void with id: {voidCommand.AggregateId}.");
+            
+            if (Status == TransactionStatus.NotStarted)
+            {
+                _mediator.Publish(new TransactionVoided(Id, Version + 1));
+            }
+
+            _mediator.Publish(new VoidRejected(Id, Version + 1));
         }
 
         private void Apply(AuthorisationCreated authorisationCreated)
