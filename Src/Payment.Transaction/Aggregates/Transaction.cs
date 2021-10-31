@@ -26,7 +26,8 @@ namespace Payment.Transaction.Aggregates
         public Guid Id { get; private set; }
         public Guid MerchantId { get; private set; }
         public int Version { get; private set; }
-        public decimal Amount { get; private set; }
+        public decimal AvailableAmount { get; private set; }
+        public decimal InitialAmount { get; private set; }
         public TransactionStatus Status { get; private set; }
 
         public void Apply(Event @event)
@@ -51,6 +52,9 @@ namespace Payment.Transaction.Aggregates
                 case CaptureCompleted captureCompleted:
                     Apply(captureCompleted);
                     break;
+                case RefundCompleted refundCompleted:
+                    Apply(refundCompleted);
+                    break;
             }
         }
         
@@ -60,13 +64,13 @@ namespace Payment.Transaction.Aggregates
             if (aggregateId != Id || Status is TransactionStatus.Voided or TransactionStatus.Refunded or TransactionStatus.Completed)
                 throw new InvalidOperationException($"[Process] Invalid operation for Capture with id: {aggregateId}.");
 
-            if (amount > Amount)
+            if (amount > AvailableAmount)
             {
                 _mediator.Publish(new CaptureRejected(Id, Version + 1));
                 return;
             }
 
-            if (amount == Amount)
+            if (amount == AvailableAmount)
             {
                 _mediator.Publish(new CaptureCompleted(Id, Version + 1));
                 return;
@@ -81,27 +85,47 @@ namespace Payment.Transaction.Aggregates
             if (aggregateId != Id || Status is TransactionStatus.Voided or TransactionStatus.Refunded)
                 throw new InvalidOperationException($"[Process] Invalid operation for Refund with id: {aggregateId}.");
 
-            if (amount > Amount)
+            if (Status == TransactionStatus.Completed && amount <= InitialAmount)
+            {
+                if (InitialAmount - amount == 0)
+                {
+                    _mediator.Publish(new RefundCompleted(Id, Version + 1));
+                }
+                else
+                {
+                    _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
+                }
+            }
+            else if (amount > AvailableAmount)
             {
                 _mediator.Publish(new RefundRejected(Id, Version + 1));
-                return;
             }
-
-            _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
+            else
+            {
+               if (AvailableAmount - amount == 0)
+               {
+                   _mediator.Publish(new RefundCompleted(Id, Version + 1));
+               }
+               else
+               {
+                   _mediator.Publish(new RefundExecuted(Id, amount, Version + 1));
+               }
+            }
         }
         
         private void Apply(AuthorisationCreated authorisationCreated)
         {
             Id = authorisationCreated.AggregateId;
             MerchantId = authorisationCreated.MerchantId;
-            Amount = authorisationCreated.Amount;
+            InitialAmount = authorisationCreated.Amount;
+            AvailableAmount = authorisationCreated.Amount;
             Status = TransactionStatus.Active;
             Version = 1;
         }
 
         private void Apply(CaptureExecuted captureExecuted)
         {
-            Amount -= captureExecuted.Amount;
+            AvailableAmount -= captureExecuted.Amount;
             Version = captureExecuted.Version;
         }
 
@@ -112,9 +136,18 @@ namespace Payment.Transaction.Aggregates
 
         private void Apply(RefundExecuted refundExecuted)
         {
-            Amount = refundExecuted.Amount;
-            Version = refundExecuted.Version;
-            Status = TransactionStatus.Refunded;
+            if (Status == TransactionStatus.Completed)
+            {
+                AvailableAmount = refundExecuted.Amount;
+                Status = TransactionStatus.Active;
+                Version = refundExecuted.Version;
+            }
+            else
+            {
+                AvailableAmount += refundExecuted.Amount;
+                Version = refundExecuted.Version;
+                Status = TransactionStatus.Active;
+            }
         }
         
         private void Apply(RefundRejected refundRejected)
@@ -124,9 +157,16 @@ namespace Payment.Transaction.Aggregates
         
         private void Apply(CaptureCompleted captureCompleted)
         {
-            Amount = 0;
+            AvailableAmount = 0;
             Version = captureCompleted.Version;
             Status = TransactionStatus.Completed;
+        }
+        
+        private void Apply(RefundCompleted refundCompleted)
+        {
+            AvailableAmount = InitialAmount;
+            Version = refundCompleted.Version;
+            Status = TransactionStatus.Refunded;
         }
     }
 }

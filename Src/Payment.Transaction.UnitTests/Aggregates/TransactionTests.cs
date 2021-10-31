@@ -30,7 +30,7 @@ namespace Payment.Transaction.UnitTests.Aggregates
 
             Assert.Equal(merchantId, transaction.MerchantId);
             Assert.Equal(authorisationId, transaction.Id);
-            Assert.Equal(amount, transaction.Amount);
+            Assert.Equal(amount, transaction.AvailableAmount);
         }
 
         [Fact]
@@ -49,12 +49,12 @@ namespace Payment.Transaction.UnitTests.Aggregates
             transaction.Apply(authorisationCreated);
             transaction.Apply(captureExecuted);
 
-            Assert.Equal(amount - capturedAmount, transaction.Amount);
+            Assert.Equal(amount - capturedAmount, transaction.AvailableAmount);
             Assert.Equal(eventVersion, transaction.Version);
         }
-
+        
         [Fact]
-        public void Should_refund_full_amount_after_one_capture()
+        public void Should_refund_after_one_capture()
         {
             var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
             var merchantId = Guid.NewGuid();
@@ -62,16 +62,16 @@ namespace Payment.Transaction.UnitTests.Aggregates
             const decimal amount = 20m;
 
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
-            transaction.Apply(authorisationCreated);
             const decimal capturedAmount = 10m;
             const int eventVersion = 3;
             var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, eventVersion);
-            var refundExecuted = new RefundExecuted(authorisationId, amount, 3);
+            var refundCompleted = new RefundCompleted(authorisationId, 3);
             
+            transaction.Apply(authorisationCreated);
             transaction.Apply(captureExecuted);
-            transaction.Apply(refundExecuted);
+            transaction.Apply(refundCompleted);
 
-            Assert.Equal(transaction.Amount, amount);
+            Assert.Equal(amount, transaction.AvailableAmount);
             Assert.Equal(TransactionStatus.Refunded, transaction.Status);
         }
 
@@ -93,7 +93,7 @@ namespace Payment.Transaction.UnitTests.Aggregates
             transaction.Apply(captureExecuted);
             transaction.Apply(rejected);
 
-            Assert.Equal(amount - capturedAmount, transaction.Amount);
+            Assert.Equal(amount - capturedAmount, transaction.AvailableAmount);
             Assert.Equal(TransactionStatus.Active, transaction.Status);
         }
 
@@ -130,16 +130,40 @@ namespace Payment.Transaction.UnitTests.Aggregates
             
             var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
             var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
-            var refundExecuted = new RefundExecuted(authorisationId, amount, 3);
+            var refundCompleted = new RefundCompleted(authorisationId, 3);
             var captureCommand = new CaptureCommand(authorisationId, 10m);
             
             transaction.Apply(authorisationCreated);
             transaction.Apply(captureExecuted);
-            transaction.Apply(refundExecuted);
+            transaction.Apply(refundCompleted);
             
             Assert.Throws<InvalidOperationException>(() => transaction.Process(captureCommand));
             Assert.Equal(TransactionStatus.Refunded, transaction.Status);
             Assert.Equal(3, transaction.Version);
+        }
+        
+        [Fact]
+        public void Should_reject_refund_with_amount_above_available()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
+            var refundCommand = new RefundCommand(authorisationId, amount);
+            
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            
+            transaction.Process(refundCommand);
+            
+            _mediator.Verify(
+                m => m.Publish(
+                    It.Is<RefundRejected>(r => 
+                        r.Version == 3), It.IsAny<CancellationToken>()),Times.Once);
         }
 
         [Fact]
@@ -210,6 +234,43 @@ namespace Payment.Transaction.UnitTests.Aggregates
             Assert.Throws<InvalidOperationException>(() => transaction.Process(captureCommand));
             Assert.Equal(TransactionStatus.Completed, transaction.Status);
             Assert.Equal(3, transaction.Version);
+        }
+
+        [Fact]
+        public void Should_refund_in_two_parcels()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+            const decimal capturedAmount = 10m;
+            
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, capturedAmount, 2);
+            var captureCompleted = new CaptureCompleted(authorisationId, 3);
+            var refundExecuted = new RefundExecuted(authorisationId, 10m, 4);
+            
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            transaction.Apply(captureCompleted);
+            transaction.Apply(refundExecuted);
+            
+            Assert.Equal(10m, transaction.AvailableAmount);
+            Assert.Equal(TransactionStatus.Active, transaction.Status);
+            Assert.Equal(4, transaction.Version);
+
+            var refundCommand = new RefundCommand(authorisationId, 10m);
+            transaction.Process(refundCommand);
+            
+            _mediator.Verify(m =>
+                m.Publish(
+                    It.Is<RefundExecuted>(n => 
+                        n.Amount == 10m && n.Version == 5), It.IsAny<CancellationToken>()), Times.Never);
+            
+            _mediator.Verify(m =>
+                m.Publish(
+                    It.Is<RefundCompleted>(n => 
+                        n.Version == 5), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
