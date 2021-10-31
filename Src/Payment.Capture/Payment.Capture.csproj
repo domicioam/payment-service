@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Payment.EventSourcing\Payment.EventSourcing.csproj" />
+      <ProjectReference Include="..\Payment.Repository\Payment.Repository.csproj" />
       <ProjectReference Include="..\Payment.Transaction\Payment.Transaction.csproj" />
     </ItemGroup>
 </Project>
