@@ -12,15 +12,18 @@ services:
       - "5432:5432"
     env_file:
       - Payment.Authorise/sqldata.env
-    # volumes:
-    #   - ./payment_authorize_schema.sql:/docker-entrypoint-inidb.d/payment_authorize_schema.sql
+    volumes:
+      - ./authorise_schema.sql:/docker-entrypoint-initdb.d/authorise_schema.sql
 
   event-store-sqldata:
     image: "postgres"
     ports:
       - "5433:5433"
     env_file:
-      - Payment.Authorise/sqldata.env
+      - ./event_store_sqldata.env
+    command: -p 5433
+    volumes:
+      - ./event_store_schema.sql:/docker-entrypoint-initdb.d/event_store_schema.sql
 
   payment-authorise:
     image: ${DOCKER_REGISTRY-}payment-authorise
