@@ -10,7 +10,8 @@ namespace Payment.Transaction.Aggregates
         Active,
         Voided,
         Refunded,
-        Completed
+        Completed,
+        NotStarted
     }
 
     public class Transaction
