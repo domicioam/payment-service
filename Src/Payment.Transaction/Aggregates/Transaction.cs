@@ -68,13 +68,14 @@ namespace Payment.Transaction.Aggregates
             {
                 _mediator.Publish(new CaptureRejected(Id, Version + 1));
             }
-            else
-            if (amount == AvailableAmount)
+            else if (amount == AvailableAmount)
             {
                 _mediator.Publish(new CaptureCompleted(Id, Version + 1));
             }
             else
+            {
                 _mediator.Publish(new CaptureExecuted(Id, amount, Version + 1));
+            }
         }
 
         public void Process(RefundCommand refundCommand)
@@ -136,6 +137,8 @@ namespace Payment.Transaction.Aggregates
 
         private void Apply(RefundExecuted refundExecuted)
         {
+            //TODO: Refactor to state pattern
+
             if (Status == TransactionStatus.Completed)
             {
                 AvailableAmount = refundExecuted.Amount;
