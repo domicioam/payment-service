@@ -437,5 +437,5 @@ namespace Payment.Transaction.UnitTests.Aggregates
             
             Assert.Equal(TransactionStatus.NotStarted, transaction.Status);
         }
-}
+    }
 }

@@ -126,12 +126,13 @@ namespace Payment.Transaction.Aggregates
             MerchantId = authorisationCreated.MerchantId;
             InitialAmount = authorisationCreated.Amount;
             AvailableAmount = authorisationCreated.Amount;
-            Status = TransactionStatus.Active;
+            Status = TransactionStatus.NotStarted;
             Version = 1;
         }
 
         private void Apply(CaptureExecuted captureExecuted)
         {
+            Status = TransactionStatus.Active;
             AvailableAmount -= captureExecuted.Amount;
             Version = captureExecuted.Version;
         }
