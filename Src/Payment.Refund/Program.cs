@@ -2,8 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Payment.Capture.Repository;
+using Payment.Communication.RabbitMq;
+using Payment.EventSourcing.Repository;
+using Payment.Refund.Application;
 
 namespace Payment.Refund
 {
@@ -16,6 +21,16 @@ namespace Payment.Refund
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) => { services.AddHostedService<Worker>(); });
+                .ConfigureServices((hostContext, services) =>
+                {
+                    var rabbitMqConfig = hostContext.Configuration.GetSection("rabbitMq");
+                    services.Configure<RabbitMqConfig>(rabbitMqConfig);
+                    services.AddTransient<RabbitMqConsumer>();
+                    services.AddTransient<RefundService>();
+                    services.AddTransient<TransactionRepository>();
+                    services.AddTransient<IEventRepository, EventRepository>();
+                    services.AddMediatR(typeof(Program));
+                    services.AddHostedService<Worker>();
+                });
     }
 }

@@ -40,21 +40,21 @@ namespace Payment.Gateway.Controllers
             {
                 case Action.Capture:
                     var capture = JsonSerializer.Serialize(new CaptureCommand(id, amount));
-                    _rabbitMqPublisher.SendMessageAsync(capture, Queues.Capture);
+                    await _rabbitMqPublisher.SendMessageAsync(capture, Queues.Capture);
                     break;
                 case Action.Refund:
                     var refund = JsonSerializer.Serialize(new RefundCommand(id, amount));
-                    _rabbitMqPublisher.SendMessageAsync(refund, Queues.Refund);
+                    await _rabbitMqPublisher.SendMessageAsync(refund, Queues.Refund);
                     break;
                 case Action.Void:
                     var @void = JsonSerializer.Serialize(new VoidCommand(id));
-                    _rabbitMqPublisher.SendMessageAsync(@void, Queues.Void);
+                    await _rabbitMqPublisher.SendMessageAsync(@void, Queues.Void);
                     break;
                 default:
                     return BadRequest();
             }
 
-            return Ok();
+            return Accepted();
         }
     }
 }
