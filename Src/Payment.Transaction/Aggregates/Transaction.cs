@@ -57,6 +57,12 @@ namespace Payment.Transaction.Aggregates
                 case RefundCompleted refundCompleted:
                     Apply(refundCompleted);
                     break;
+                case TransactionVoided transactionVoided:
+                    Apply(transactionVoided);
+                    break;
+                case VoidRejected voidRejected:
+                    Apply(voidRejected);
+                    break;
             }
         }
 
@@ -186,6 +192,18 @@ namespace Payment.Transaction.Aggregates
             AvailableAmount = InitialAmount;
             Version = refundCompleted.Version;
             Status = TransactionStatus.Refunded;
+        }
+        
+        private void Apply(TransactionVoided transactionVoided)
+        {
+            AvailableAmount = 0;
+            Version = transactionVoided.Version;
+            Status = TransactionStatus.Voided;
+        }
+        
+        private void Apply(VoidRejected voidRejected)
+        {
+            Version = voidRejected.Version;
         }
     }
 }

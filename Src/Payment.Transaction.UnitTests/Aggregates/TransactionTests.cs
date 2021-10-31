@@ -461,5 +461,41 @@ namespace Payment.Transaction.UnitTests.Aggregates
             
             Assert.Equal(TransactionStatus.NotStarted, transaction.Status);
         }
+
+        [Fact]
+        public void Should_be_in_voided_state_after_voided_event()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var transactionVoided = new TransactionVoided(authorisationId, 2);
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(transactionVoided);
+            
+            Assert.Equal(TransactionStatus.Voided, transaction.Status);
+            Assert.Equal(2, transaction.Version);
+        }
+        
+        [Fact]
+        public void Should_not_change_state_when_void_is_rejected()
+        {
+            var transaction = new Transaction.Aggregates.Transaction(_mediator.Object);
+            var merchantId = Guid.NewGuid();
+            var authorisationId = Guid.NewGuid();
+            const decimal amount = 20m;
+
+            var authorisationCreated = new AuthorisationCreated(merchantId, authorisationId, amount);
+            var captureExecuted = new CaptureExecuted(authorisationId, amount, version: 2);
+            var voidRejected = new VoidRejected(authorisationId, 3);
+            transaction.Apply(authorisationCreated);
+            transaction.Apply(captureExecuted);
+            transaction.Apply(voidRejected);
+            
+            Assert.Equal(TransactionStatus.Active, transaction.Status);
+            Assert.Equal(3, transaction.Version);
+        }
     }
 }
