@@ -6,6 +6,7 @@ Contents
   - [Introduction](#introduction)
   - [How to setup](#how-to-setup)
   - [How to test](#how-to-test)
+  - [Architecture decisions](#architecture-decisions)
   - [Things to improve](#things-to-improve)
 
 ## Introduction
@@ -26,7 +27,7 @@ You can use the swagger api to play with the solution. There is already a Mercha
 - In swagger you can send REST calls to create a transaction using the merchant id;
 - You can also send commands to a transaction already created (capture, refund, void);
 
-## About the project structure and decisions
+## Architecture decisions
 
 Please visit the [architecture diagrams](Docs/Architecture/architecture-diagrams.md) and [architecture decisions](Docs/Architecture/architecture-decisions.md) pages to find out more.
 
