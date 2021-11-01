@@ -10,7 +10,7 @@ namespace Payment.EventSourcing.Repository
 {
     public class EventRepository : IEventRepository
     {
-        const string connectionString = "User ID=postgres;Password=password;Host=localhost;Port=5433;Database=event-store;";
+        const string connectionString = "User ID=postgres;Password=password;Host=localhost;Port=5433;Database=eventstore;";
 
         public async Task SaveAsync(LoggedEvent @event)
         {
