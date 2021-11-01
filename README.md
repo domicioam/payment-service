@@ -11,7 +11,7 @@ Contents
 
 ## Introduction
 
-This project simulates a payment system by using C#, micro-services, Docker, Postgres, RabbitMQ, TDD and others.
+This project simulates a payment system by using C#, micro-services, Docker, Postgres, RabbitMQ, TDD, Event Sourcing and etc.
 
 ## How to setup
 
