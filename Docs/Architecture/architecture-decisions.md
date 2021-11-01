@@ -1,6 +1,12 @@
 # Architecture decisions
 
-[[TOC]]
+Contents
+
+- [Architecture decisions](#architecture-decisions)
+  - [Introduction](#introduction)
+  - [Non-functional requirements](#non-functional-requirements)
+  - [Decisions](#decisions)
+  - [Conclusion](#conclusion)
 
 ## Introduction
 
