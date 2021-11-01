@@ -58,6 +58,10 @@ We make use of micro-services to execute some of the functions in a distributed 
 
 [Jenkins](https://www.jenkins.io/) and [Docker](https://www.docker.com/) were chosen for this task as they are not vendor locked and we plug our development environment in Microsoft Azure, Google Cloud or Amazon AWS for example;
 
+### Event sourcing
+
+Event sourcing with a event store was used to help with distributed transactions, concurrency and tracking of all operations executed in a transaction. Optimistic locking (event versioning) was used together with event sourcing to guarantee no operation is executed more than once.;
+
 ## Conclusion
 
 Those were the initial decisions made in this project to guarantee the initial requirements.
