@@ -39,3 +39,4 @@ Please visit the [architecture diagrams](Docs/Architecture/architecture-diagrams
 - Integration tests to be done;
 - Webhooks / SignalR to communicate back to the merchant;
 - Reflect solution folders in the real project structure. See [solution structure](Docs/Architecture/architecture-diagrams.md#project-structure);
+- Add event store to the components diagram;
