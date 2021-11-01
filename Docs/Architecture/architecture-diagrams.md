@@ -1,4 +1,12 @@
-# Architecture diagrams
+# Architecture Diagrams
+
+Contents
+
+- [Architecture Diagrams](#architecture-diagrams)
+  - [Introduction](#introduction)
+  - [Use case diagram](#use-case-diagram)
+  - [Components diagram](#components-diagram)
+  - [Project structure](#project-structure)
 
 ## Introduction
 
