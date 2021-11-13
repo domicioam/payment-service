@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Payment.Communication.RabbitMq;
+using Payment.EventSourcing;
+using Payment.EventSourcing.Config;
 
 namespace Payment.Gateway
 {
@@ -28,7 +30,11 @@ namespace Payment.Gateway
         public void ConfigureServices(IServiceCollection services)
         {
             var rabbitMqConfig = Configuration.GetSection("rabbitMq");
+            var databaseConfig = Configuration.GetSection("database");
             services.Configure<RabbitMqConfig>(rabbitMqConfig);
+            services.Configure<Database>(databaseConfig);
+            
+            
             
             services.AddControllers();
             services.AddLogging();

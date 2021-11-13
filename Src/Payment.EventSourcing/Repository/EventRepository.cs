@@ -3,14 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.Options;
 using Npgsql;
+using Payment.EventSourcing.Config;
 
 namespace Payment.EventSourcing.Repository
 {
     public class EventRepository : IEventRepository
     {
-        const string connectionString = "User ID=postgres;Password=password;Host=localhost;Port=5433;Database=eventstore;";
+        private readonly string connectionString;
 
+        public EventRepository(IOptions<Database> databaseConfig)
+        {
+            var database = databaseConfig.Value;
+            connectionString =
+                $"User ID=postgres;Password=password;Host={database.EventStore.Host};Port=5433;Database=eventstore;";
+        }
+        
         public async Task SaveAsync(LoggedEvent @event)
         {
             @event.TimeStamp = DateTime.Now; //TODO: make utc again
