@@ -13,7 +13,7 @@ namespace Payment.EventSourcing.Repository
 
         public async Task SaveAsync(LoggedEvent @event)
         {
-            @event.TimeStamp = DateTime.Now;
+            @event.TimeStamp = DateTime.Now; //TODO: make utc again
             await using var connection = new NpgsqlConnection(connectionString);
             
             string sql = $"INSERT INTO \"LoggedEvent\" (\"Action\", \"AggregateId\", \"Data\", \"Version\", \"TimeStamp\") " +
