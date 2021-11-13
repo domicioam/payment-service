@@ -13,7 +13,16 @@ namespace Payment.EventSourcing
     /// <summary>
     /// Silly implementation of an event store.
     /// </summary>
-    public class EventStore : IEventStore, INotificationHandler<AuthorisationCreated>, INotificationHandler<AuthorisationRejected>
+    public class EventStore : IEventStore, INotificationHandler<AuthorisationCreated>, 
+        INotificationHandler<AuthorisationRejected>,
+        INotificationHandler<CaptureCompleted>,
+        INotificationHandler<CaptureExecuted>,
+        INotificationHandler<CaptureRejected>,
+        INotificationHandler<RefundCompleted>,
+        INotificationHandler<RefundExecuted>,
+        INotificationHandler<RefundRejected>,
+        INotificationHandler<TransactionVoided>,
+        INotificationHandler<VoidRejected>
     {
         private readonly IEventRepository _eventRepository;
         private readonly ILogger<EventStore> _logger;
@@ -59,6 +68,46 @@ namespace Payment.EventSourcing
         }
 
         public async Task Handle(AuthorisationRejected notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(CaptureCompleted notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(CaptureExecuted notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(CaptureRejected notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(RefundCompleted notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(RefundExecuted notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(RefundRejected notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(TransactionVoided notification, CancellationToken cancellationToken)
+        {
+            await SaveAsync<Event>(notification);
+        }
+
+        public async Task Handle(VoidRejected notification, CancellationToken cancellationToken)
         {
             await SaveAsync<Event>(notification);
         }
