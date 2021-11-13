@@ -10,6 +10,7 @@ namespace Payment.Communication.RabbitMq
     public delegate void DoWork(string message);
     public class RabbitMqConsumer
     {
+        private readonly ILogger<RabbitMqConsumer> _logger;
         private IConnection _connection;
         private IModel _channel;
         // private const string QUEUE_NAME = "payment_queue";
@@ -45,6 +46,12 @@ namespace Payment.Communication.RabbitMq
 
                     _channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: true);
                 };
+                
+                consumer.Registered += (sender, args) => { _logger.LogInformation("Consumer registered."); };
+
+                consumer.Unregistered += (sender, args) => { _logger.LogWarning("Consumer unregistered."); };
+
+                consumer.ConsumerCancelled += (sender, args) => { _logger.LogWarning("Consumer cancelled."); };
 
                 _channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
             });
@@ -71,6 +78,7 @@ namespace Payment.Communication.RabbitMq
 
         public RabbitMqConsumer(ILogger<RabbitMqConsumer> logger, IOptions<RabbitMqConfig> rabbitMqConfig) : this()
         {
+            _logger = logger;
             _rabbitMqConfig = rabbitMqConfig.Value;
         }
 
