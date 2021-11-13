@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Dapper.Contrib.Extensions;
 using Npgsql;
 
 namespace Payment.EventSourcing.Repository
@@ -14,15 +13,19 @@ namespace Payment.EventSourcing.Repository
 
         public async Task SaveAsync(LoggedEvent @event)
         {
-            @event.TimeStamp = DateTime.UtcNow;
+            @event.TimeStamp = DateTime.Now;
             await using var connection = new NpgsqlConnection(connectionString);
-            connection.Insert(@event);
+            
+            string sql = $"INSERT INTO \"LoggedEvent\" (\"Action\", \"AggregateId\", \"Data\", \"Version\", \"TimeStamp\") " +
+                         $"VALUES (@Action, @AggregateId, @Data, @Version, @TimeStamp);";
+
+            await connection.ExecuteAsync(sql, @event);
         }
 
         public async Task<IList<LoggedEvent>> AllAsync(Guid aggregateId)
         {
             await using var connection = new NpgsqlConnection(connectionString);
-            var events = await connection.QueryAsync<LoggedEvent>($"SELECT * FROM LoggedEvent WHERE ID = {aggregateId}");
+            var events = await connection.QueryAsync<LoggedEvent>($"SELECT * FROM \"LoggedEvent\" WHERE \"Id\" = {aggregateId}");
             return events.ToList();
         }
     }

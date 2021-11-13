@@ -1,22 +1,17 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Dapper.Contrib.Extensions;
 
 namespace Payment.EventSourcing
 {
     [Table("LoggedEvent")]
     public class LoggedEvent
     {
-        public Guid Id { get; set; }
-        [Required]
+        [Key]
+        public int Id { get; set; }
         public string Action { get; set; }
-        [Required]
         public Guid AggregateId { get; set; }
-        [Required]
         public string Data { get; set; }
-        [Required]
         public DateTime TimeStamp { get; set; }
-        [Required]
         public int Version { get; set; }
     }
 }
