@@ -41,8 +41,8 @@ namespace AuthoriseService.UnitTests.Services
         public void Should_return_true_when_card_is_valid()
         {
             var merchantRepository = new Mock<MerchantRepository>();
-            var creditCard = new CreditCard("1234", new DateTime(2023, 10, 20), "123");
-            var validUntil = new DateTime(2024, 10, 20);
+            var creditCard = new CreditCard("1234", new DateTime(2024, 10, 20), "123");
+            var validUntil = new DateTime(2023, 10, 20);
             var authorisationService = new ValidationService(merchantRepository.Object);
             var result = authorisationService.IsCreditCardValid(creditCard, validUntil);
             Assert.True(result);
@@ -52,8 +52,8 @@ namespace AuthoriseService.UnitTests.Services
         public void Should_return_false_when_card_is_invalid()
         {
             var merchantRepository = new Mock<MerchantRepository>();
-            var creditCard = new CreditCard("1234", new DateTime(2025, 10, 20), "123");
-            var validUntil = new DateTime(2024, 10, 20);
+            var creditCard = new CreditCard("1234", new DateTime(2024, 10, 20), "123");
+            var validUntil = new DateTime(2025, 10, 20);
             var authorisationService = new ValidationService(merchantRepository.Object);
             var result = authorisationService.IsCreditCardValid(creditCard, validUntil);
             Assert.False(result);

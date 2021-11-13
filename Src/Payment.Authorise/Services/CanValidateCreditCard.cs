@@ -6,6 +6,6 @@ namespace AuthorizeService.Services
 {
     public interface CanValidateCreditCard
     {
-        bool IsCreditCardValid(CreditCard creditCard, DateTime validUntil);
+        bool IsCreditCardValid(CreditCard creditCard, DateTime currentDate);
     }
 }

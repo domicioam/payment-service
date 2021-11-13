@@ -24,6 +24,7 @@ namespace AuthorizeService
                     var rabbitMqConfig = hostContext.Configuration.GetSection("rabbitMq");
                     services.Configure<RabbitMqConfig>(rabbitMqConfig);
                     services.AddTransient<RabbitMqConsumer>();
+                    services.AddTransient<RabbitMqPublisher>();
                     services.AddTransient<AuthorisationFactory>();
                     services.AddTransient<AuthoriseService>();
                     services.AddTransient<EventStore>();

@@ -11,7 +11,7 @@ namespace AuthorizeService.Repository
         public virtual async Task<Merchant> GetByIdAsync(Guid id)
         {
             await using var connection = new NpgsqlConnection("User ID=postgres;Password=password;Host=localhost;Port=5432;Database=authorise;");
-            var merchant = await connection.QuerySingleAsync<Merchant>($"SELECT * FROM Merchant WHERE ID = {id}");
+            var merchant = await connection.QuerySingleAsync<Merchant>($"SELECT * FROM \"Merchant\" WHERE \"Id\" = \'{id}\'");
             return merchant;
         }
     }

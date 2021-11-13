@@ -27,6 +27,7 @@ namespace AuthorizeService.Services
         
         public async Task AuthoriseAsync(AuthorisationCommand authoriseCommand)
         {
+            _logger.LogInformation($"[Authorise] Authorisation command received for merchant id: {authoriseCommand.MerchantId}.");
             var (transactionId, merchantId, creditCard, currency, amount) = authoriseCommand;
             try
             {
