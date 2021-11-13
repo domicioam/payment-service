@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   rabbitmq:
     image: rabbitmq
@@ -32,6 +30,8 @@ services:
       dockerfile: Payment.Authorise/Dockerfile
     depends_on:
       - rabbitmq
+      - event-store-sqldata
+      - payment-authorise-sqldata
 
   payment-capture:
     image: ${DOCKER_REGISTRY-}payment-capture
@@ -40,6 +40,7 @@ services:
       dockerfile: Payment.Capture/Dockerfile
     depends_on:
       - rabbitmq
+      - event-store-sqldata
 
   payment-gateway:
     image: ${DOCKER_REGISTRY-}payment-gateway
@@ -51,6 +52,7 @@ services:
       dockerfile: Payment.Gateway/Dockerfile
     depends_on:
       - rabbitmq
+      - event-store-sqldata
 
   payment-refund:
     image: ${DOCKER_REGISTRY-}payment-refund
@@ -59,6 +61,7 @@ services:
       dockerfile: Payment.Refund/Dockerfile
     depends_on:
       - rabbitmq
+      - event-store-sqldata
 
   payment-void:
     image: ${DOCKER_REGISTRY-}payment-void
@@ -67,3 +70,4 @@ services:
       dockerfile: Payment.Void/Dockerfile
     depends_on:
       - rabbitmq
+      - event-store-sqldata

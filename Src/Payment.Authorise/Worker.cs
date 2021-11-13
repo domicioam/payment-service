@@ -43,6 +43,7 @@ namespace AuthorizeService
         {
             try
             {
+                _logger.LogInformation("Message received.");
                 var authoriseDto = JsonSerializer.Deserialize<AuthorisationCommand>(message);
                 await _authoriseService.AuthoriseAsync(authoriseDto);
             }

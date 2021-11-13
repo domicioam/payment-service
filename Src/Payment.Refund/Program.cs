@@ -27,6 +27,7 @@ namespace Payment.Refund
                     var rabbitMqConfig = hostContext.Configuration.GetSection("rabbitMq");
                     services.Configure<RabbitMqConfig>(rabbitMqConfig);
                     services.AddTransient<RabbitMqConsumer>();
+                    services.AddTransient<RabbitMqPublisher>();
                     services.AddTransient<RefundService>();
                     services.AddTransient<TransactionRepository>();
                     services.AddTransient<IEventRepository, EventRepository>();

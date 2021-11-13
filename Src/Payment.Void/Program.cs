@@ -27,6 +27,7 @@ namespace Payment.Void
                     var rabbitMqConfig = hostContext.Configuration.GetSection("rabbitMq");
                     services.Configure<RabbitMqConfig>(rabbitMqConfig);
                     services.AddTransient<RabbitMqConsumer>();
+                    services.AddTransient<RabbitMqPublisher>();
                     services.AddTransient<VoidService>();
                     services.AddTransient<TransactionRepository>();
                     services.AddTransient<IEventRepository, EventRepository>();

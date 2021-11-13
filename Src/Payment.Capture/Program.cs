@@ -27,6 +27,7 @@ namespace Payment.Capture
                     var rabbitMqConfig = hostContext.Configuration.GetSection("rabbitMq");
                     services.Configure<RabbitMqConfig>(rabbitMqConfig);
                     services.AddTransient<RabbitMqConsumer>();
+                    services.AddTransient<RabbitMqPublisher>();
                     services.AddTransient<CaptureService>();
                     services.AddTransient<TransactionRepository>();
                     services.AddTransient<IEventRepository, EventRepository>();
