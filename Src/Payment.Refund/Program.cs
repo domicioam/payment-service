@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Payment.Capture.Repository;
 using Payment.Communication.RabbitMq;
+using Payment.EventSourcing;
 using Payment.EventSourcing.Repository;
 using Payment.Refund.Application;
 
@@ -30,6 +31,7 @@ namespace Payment.Refund
                     services.AddTransient<TransactionRepository>();
                     services.AddTransient<IEventRepository, EventRepository>();
                     services.AddMediatR(typeof(Program));
+                    services.AddMediatR(typeof(EventStore));
                     services.AddHostedService<Worker>();
                 });
     }

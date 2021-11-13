@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Payment.Capture.Repository;
 using Payment.Capture.Services;
 using Payment.Communication.RabbitMq;
+using Payment.EventSourcing;
 using Payment.EventSourcing.Repository;
 
 namespace Payment.Capture
@@ -30,6 +31,7 @@ namespace Payment.Capture
                     services.AddTransient<TransactionRepository>();
                     services.AddTransient<IEventRepository, EventRepository>();
                     services.AddMediatR(typeof(Program));
+                    services.AddMediatR(typeof(EventStore));
                     services.AddHostedService<Worker>();
                 });
     }

@@ -30,6 +30,7 @@ namespace AuthorizeService
                     services.AddTransient<EventStore>();
                     services.AddHostedService<Worker>();
                     services.AddMediatR(typeof(Program));
+                    services.AddMediatR(typeof(EventStore));
                     services.AddTransient<CanValidateCreditCard, ValidationService>();
                     services.AddTransient<CanValidateMerchant, ValidationService>();
                     services.AddTransient<MerchantRepository>();
