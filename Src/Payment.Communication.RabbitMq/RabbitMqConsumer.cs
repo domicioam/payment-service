@@ -13,7 +13,6 @@ namespace Payment.Communication.RabbitMq
         private readonly ILogger<RabbitMqConsumer> _logger;
         private IConnection _connection;
         private IModel _channel;
-        // private const string QUEUE_NAME = "payment_queue";
         private readonly RabbitMqConfig _rabbitMqConfig;
 
         public event DoWork MessageReceived;
