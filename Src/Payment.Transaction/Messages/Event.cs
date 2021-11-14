@@ -4,8 +4,8 @@ namespace Payment.EventSourcing
 {
     public class Event : Message
     {
-        public DateTime When { get; }
-        public int Version { get; }
+        public DateTime When { get; protected set; }
+        public int Version { get; protected set; }
 
         public Event(int version)
             : base()

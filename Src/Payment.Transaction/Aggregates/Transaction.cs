@@ -1,6 +1,5 @@
 ﻿using System;
 using MediatR;
-using Payment.EventSourcing;
 using Payment.EventSourcing.Messages;
 
 namespace Payment.Transaction.Aggregates
@@ -31,40 +30,6 @@ namespace Payment.Transaction.Aggregates
         public decimal AvailableAmount { get; private set; }
         public decimal InitialAmount { get; private set; }
         public TransactionStatus Status { get; private set; }
-
-        public void Apply(Event @event)
-        {
-            switch (@event)
-            {
-                case AuthorisationCreated authorisationCreated:
-                    Apply(authorisationCreated);
-                    break;
-                case CaptureExecuted captureExecuted:
-                    Apply(captureExecuted);
-                    break;
-                case CaptureRejected captureRejected:
-                    Apply(captureRejected);
-                    break;
-                case RefundExecuted refundExecuted:
-                    Apply(refundExecuted);
-                    break;
-                case RefundRejected refundRejected:
-                    Apply(refundRejected);
-                    break;
-                case CaptureCompleted captureCompleted:
-                    Apply(captureCompleted);
-                    break;
-                case RefundCompleted refundCompleted:
-                    Apply(refundCompleted);
-                    break;
-                case TransactionVoided transactionVoided:
-                    Apply(transactionVoided);
-                    break;
-                case VoidRejected voidRejected:
-                    Apply(voidRejected);
-                    break;
-            }
-        }
 
         public void Process(CaptureCommand captureCommand)
         {
@@ -135,7 +100,7 @@ namespace Payment.Transaction.Aggregates
             _mediator.Publish(new VoidRejected(Id, Version + 1));
         }
 
-        private void Apply(AuthorisationCreated authorisationCreated)
+        public void Apply(AuthorisationCreated authorisationCreated)
         {
             Id = authorisationCreated.AggregateId;
             MerchantId = authorisationCreated.MerchantId;
@@ -145,19 +110,19 @@ namespace Payment.Transaction.Aggregates
             Version = 1;
         }
 
-        private void Apply(CaptureExecuted captureExecuted)
+        public void Apply(CaptureExecuted captureExecuted)
         {
             Status = TransactionStatus.Active;
             AvailableAmount -= captureExecuted.Amount;
             Version = captureExecuted.Version;
         }
 
-        private void Apply(CaptureRejected captureRejected)
+        public void Apply(CaptureRejected captureRejected)
         {
             Version = captureRejected.Version;
         }
 
-        private void Apply(RefundExecuted refundExecuted)
+        public void Apply(RefundExecuted refundExecuted)
         {
             //TODO: Refactor to state pattern
 
@@ -175,33 +140,33 @@ namespace Payment.Transaction.Aggregates
             }
         }
 
-        private void Apply(RefundRejected refundRejected)
+        public void Apply(RefundRejected refundRejected)
         {
             Version = refundRejected.Version;
         }
 
-        private void Apply(CaptureCompleted captureCompleted)
+        public void Apply(CaptureCompleted captureCompleted)
         {
             AvailableAmount = 0;
             Version = captureCompleted.Version;
             Status = TransactionStatus.Completed;
         }
 
-        private void Apply(RefundCompleted refundCompleted)
+        public void Apply(RefundCompleted refundCompleted)
         {
             AvailableAmount = InitialAmount;
             Version = refundCompleted.Version;
             Status = TransactionStatus.Refunded;
         }
         
-        private void Apply(TransactionVoided transactionVoided)
+        public void Apply(TransactionVoided transactionVoided)
         {
             AvailableAmount = 0;
             Version = transactionVoided.Version;
             Status = TransactionStatus.Voided;
         }
         
-        private void Apply(VoidRejected voidRejected)
+        public void Apply(VoidRejected voidRejected)
         {
             Version = voidRejected.Version;
         }

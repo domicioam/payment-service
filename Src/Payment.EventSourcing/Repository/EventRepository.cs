@@ -34,7 +34,7 @@ namespace Payment.EventSourcing.Repository
         public async Task<IList<LoggedEvent>> AllAsync(Guid aggregateId)
         {
             await using var connection = new NpgsqlConnection(connectionString);
-            var events = await connection.QueryAsync<LoggedEvent>($"SELECT * FROM \"LoggedEvent\" WHERE \"Id\" = {aggregateId}");
+            var events = await connection.QueryAsync<LoggedEvent>($"SELECT * FROM \"LoggedEvent\" WHERE \"AggregateId\" = \'{aggregateId}\'");
             return events.ToList();
         }
     }
