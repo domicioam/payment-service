@@ -12,6 +12,8 @@ namespace AuthorizeService.Repository
     public class MerchantRepository
     {
         private readonly Database _database;
+        
+        protected MerchantRepository() {}
 
         public MerchantRepository(IOptions<Database> databaseConfig)
         {
